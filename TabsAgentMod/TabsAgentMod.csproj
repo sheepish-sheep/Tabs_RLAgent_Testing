@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TabsAgentMod</RootNamespace>
+    <AssemblyName>TabsAgentMod</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <!-- Update this path if your Steam install differs. -->
+    <TABS_DIR>C:\Program Files (x86)\Steam\steamapps\common\Totally Accurate Battle Simulator</TABS_DIR>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx">
+      <HintPath>$(TABS_DIR)\BepInEx\core\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(TABS_DIR)\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.Entities">
+      <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\Unity.Entities.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Sirenix.Serialization">
+      <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\Sirenix.Serialization.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
