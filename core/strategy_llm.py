@@ -24,7 +24,7 @@ class ArmyPlan(BaseModel):
 
 class StrategyLLM:
     def __init__(self, model=None):
-        self.model = model or ChatOpenAI()
+        self.model = model or ChatOpenAI(model="gpt-4o")
         self.structured_model = self.model.with_structured_output(ArmyPlan)
         self.prompt = ChatPromptTemplate.from_messages(
             [
@@ -41,7 +41,8 @@ class StrategyLLM:
                     "Use y for depth: lower y = back line, higher y = front line. Place ranged/support behind melee/tanks."
                     "Also remember that Tabs has friendly fire and units will often hit allies. "
                     "Never exceed the budget and never invent unit names. "
-                    "Prefer a balanced mix using tags (melee, ranged, tank, aoe) when possible. "
+                    "Prefer a balanced mix using tags (melee, ranged, tank, aoe) when possible."
+                    "However, depending on enemy number and type, all ranged, all AoE, or all melee could be fine"
                     "Remember their is normally no wrong answer so hoardes of cheap units are acceptable. "
                     "Spend at least 95% of budget unless impossible; minimize leftover without exceeding it."
                 ),

@@ -198,7 +198,7 @@ namespace TabsAgentMod
                         int columns = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt(plan.Placements.Count)));
                         int row = offsetIndex / columns;
                         int col = offsetIndex % columns;
-                        float spacingX = 3f;
+                        float spacingX = 3.5f;
                         float spacingZ = 4.5f;
                         float spreadX = (col - (columns - 1) * 0.5f) * spacingX;
                         float spreadZ = row * spacingZ;
