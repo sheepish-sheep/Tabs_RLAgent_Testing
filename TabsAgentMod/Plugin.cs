@@ -28,7 +28,7 @@ namespace TabsAgentMod
             _bridge = new FileBridge(_config.IoDirectory, Logger);
             _collector = _config.UseMockState
                 ? (IGameStateCollector)new MockStateCollector(_config)
-                : new GameStateCollector(Logger);
+                : new GameStateCollector(Logger, _config);
             _applier = new PlanApplier(Logger);
 
             // Log startup information so you can verify the mod loaded.
@@ -45,6 +45,11 @@ namespace TabsAgentMod
             {
                 Logger.LogInfo("P pressed: writing state and running LLM bridge.");
                 WriteStateIfReady();
+                if (PlanApplier.FindRedAnchorUnit() == null)
+                {
+                    Logger.LogError("Red anchor unit not found. Place a RED unit before running the LLM.");
+                    return;
+                }
                 bool started = TryRunLlmOnce();
                 if (!started)
                 {

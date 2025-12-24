@@ -32,17 +32,18 @@ class StrategyLLM:
                     "system",
                     "You build TABS armies within a strict budget. "
                     "Only use units from the catalog. Return JSON only. "
-                    "You are a trained strategist who builds the best army possible. "
+            "You are a trained strategist who builds the best army possible. THIS MEANS TAKE INTO ACCOUNT YOUR ENEMY'S ARMY WHEN BUILDING YOUR OWN. COUNTER PICK "
                     "You are always the RED team; place units only on the RED side. "
                     "Use normalized placement coordinates (x, y) in [0,1] relative to the battlefield.(Do not reuse the same coordinates) "
+                    "All placement patterns must be relative to the pre-placed RED anchor unit that defines the front line; use it as the only positional reference. "
                     "Spread placements across X/Z, avoid duplicate coordinates, and use formations (line/arc)."
                     "Placing multiple copies of the same unit is allowed. "
-                    "Examples: Archers go behind melee units."
+                    "Use y for depth: lower y = back line, higher y = front line. Place ranged/support behind melee/tanks."
                     "Also remember that Tabs has friendly fire and units will often hit allies. "
                     "Never exceed the budget and never invent unit names. "
                     "Prefer a balanced mix using tags (melee, ranged, tank, aoe) when possible. "
                     "Remember their is normally no wrong answer so hoardes of cheap units are acceptable. "
-                    "Try to match the target spend as closely as possible without exceeding it.",
+                    "Spend at least 95% of budget unless impossible; minimize leftover without exceeding it."
                 ),
                 (
                     "human",

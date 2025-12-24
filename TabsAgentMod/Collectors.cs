@@ -21,11 +21,13 @@ namespace TabsAgentMod
     public class GameStateCollector : IGameStateCollector
     {
         private readonly ManualLogSource _logger;
+        private readonly ModConfig _config;
         private bool _loggedMissing;
 
-        public GameStateCollector(ManualLogSource logger)
+        public GameStateCollector(ManualLogSource logger, ModConfig config)
         {
             _logger = logger;
+            _config = config;
         }
 
         public bool TryCollect(out StatePayload state)
@@ -36,6 +38,8 @@ namespace TabsAgentMod
                 EnemyUnits = new List<UnitCount>(),
                 YourUnits = new List<UnitCount>(),
                 Phase = "unknown",
+                Campaign = false,
+                CampaignBattleBudget = 0
             };
 
             GameModeService service = ServiceLocator.GetService<GameModeService>();
@@ -45,15 +49,8 @@ namespace TabsAgentMod
                 LogOnce("GameStateCollector: GameMode not ready yet.");
                 return false;
             }
-
-            if (mode.BattleBudget != null)
-            {
-                state.Budget = mode.BattleBudget.GetBudget(Team.Red);
-                if (state.Budget <= 0)
-                {
-                    state.Budget = mode.BattleBudget.GetMaxBudget(Team.Red);
-                }
-            }
+            bool isCampaign = mode is CampaignGameMode;
+            state.Campaign = isCampaign;
 
             if (mode.GameStateManager != null)
             {
@@ -78,14 +75,6 @@ namespace TabsAgentMod
                 state.YourUnits = layoutYour ?? new List<UnitCount>();
                 state.EnemyUnits = layoutEnemy ?? new List<UnitCount>();
             }
-            else if (state.Phase == "battle")
-            {
-                TeamSystem teamSystem = World.Active != null
-                    ? World.Active.GetOrCreateManager<TeamSystem>()
-                    : null;
-                state.YourUnits = CountLiveUnits(teamSystem, Team.Red);
-                state.EnemyUnits = CountLiveUnits(teamSystem, GetEnemyTeam());
-            }
             else
             {
                 if ((layoutYour != null && layoutYour.Count > 0) || (layoutEnemy != null && layoutEnemy.Count > 0))
@@ -98,6 +87,55 @@ namespace TabsAgentMod
                 {
                     LogOnce("GameStateCollector: unknown phase, skipping unit counts.");
                 }
+            }
+
+            int enemyTotalCost = 0;
+            int yourTotalCost = 0;
+            if (!isCampaign && mode.TeamLayouts != null)
+            {
+                var enemyLayout = mode.TeamLayouts.GetTeamLayout(GetEnemyTeam());
+                if (enemyLayout != null)
+                {
+                    for (int i = 0; i < enemyLayout.Count; i++)
+                    {
+                        UnitBlueprint unitBlueprint = GetBlueprintFromLayoutUnit(enemyLayout[i]) as UnitBlueprint;
+                        if (unitBlueprint != null)
+                        {
+                            enemyTotalCost += (int)unitBlueprint.GetUnitCost();
+                        }
+                    }
+                }
+
+                var yourLayout = mode.TeamLayouts.GetTeamLayout(Team.Red);
+                if (yourLayout != null)
+                {
+                    for (int i = 0; i < yourLayout.Count; i++)
+                    {
+                        UnitBlueprint unitBlueprint = GetBlueprintFromLayoutUnit(yourLayout[i]) as UnitBlueprint;
+                        if (unitBlueprint != null)
+                        {
+                            yourTotalCost += (int)unitBlueprint.GetUnitCost();
+                        }
+                    }
+                }
+            }
+
+            if (isCampaign || enemyTotalCost <= 0)
+            {
+                if (mode.BattleBudget != null)
+                {
+                    state.Budget = mode.BattleBudget.GetBudget(Team.Red);
+                    if (state.Budget <= 0)
+                    {
+                        state.Budget = mode.BattleBudget.GetMaxBudget(Team.Red);
+                    }
+                }
+                state.CampaignBattleBudget = isCampaign ? state.Budget : 0;
+            }
+            else
+            {
+                int remainingBudget = enemyTotalCost - yourTotalCost;
+                state.Budget = remainingBudget > 0 ? remainingBudget : 0;
             }
 
             return true;
@@ -126,32 +164,6 @@ namespace TabsAgentMod
             return ToUnitCounts(counts);
         }
 
-        private static List<UnitCount> CountLiveUnits(TeamSystem teamSystem, Team team)
-        {
-            if (teamSystem == null)
-            {
-                return new List<UnitCount>();
-            }
-
-            List<Unit> units = teamSystem.GetTeamUnits(team);
-            if (units == null || units.Count == 0)
-            {
-                return new List<UnitCount>();
-            }
-
-            Dictionary<string, int> counts = new Dictionary<string, int>(units.Count, StringComparer.Ordinal);
-            for (int i = 0; i < units.Count; i++)
-            {
-                Unit unit = units[i];
-                if (unit == null)
-                {
-                    continue;
-                }
-                AddUnitCount(counts, unit.unitBlueprint);
-            }
-
-            return ToUnitCounts(counts);
-        }
 
         private static void AddUnitCount(Dictionary<string, int> counts, object blueprint)
         {
@@ -414,6 +426,8 @@ namespace TabsAgentMod
                 StateId = _counter.ToString(),
                 Budget = _config.MockBudget,
                 Phase = "setup",
+                Campaign = _config != null && _config.Campaign,
+                CampaignBattleBudget = _config != null ? _config.CampaignBattleBudget : 0,
                 EnemyUnits = new List<UnitCount>
                 {
                     new UnitCount { Name = "Clubber", Count = 3 },

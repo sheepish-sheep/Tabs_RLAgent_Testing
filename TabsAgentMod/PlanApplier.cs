@@ -40,7 +40,8 @@ namespace TabsAgentMod
         public void Apply(PlanPayload plan)
         {
             BaseGameMode gameMode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
-            if (gameMode?.GameStateManager?.GameState != GameState.PlacementState)
+            GameStateManager gameStateManager = gameMode?.GameStateManager;
+            if (gameStateManager == null || gameStateManager.GameState != GameState.PlacementState)
             {
                 _logger.LogError("Current game mode is not in PlacementState.");
                 return;
@@ -107,6 +108,15 @@ namespace TabsAgentMod
                 return;
             }
             PlacementCursor cursor = brush.Cursor;
+            Unit anchorUnit = FindRedAnchorUnit(redBounds);
+            bool hasAnchor = anchorUnit != null;
+            if (!hasAnchor)
+            {
+                _logger.LogError("Red anchor unit not found. Place a RED unit to use as an anchor.");
+                return;
+            }
+            float anchorY = hasAnchor ? anchorUnit.transform.position.y : 0f;
+            Quaternion anchorRotation = hasAnchor ? anchorUnit.transform.rotation : Quaternion.identity;
 
             // Build or reuse blueprint name caches for fast lookup.
             GetBlueprintCaches(out Dictionary<string, UnitBlueprint> blueprintByName,
@@ -114,6 +124,7 @@ namespace TabsAgentMod
                 out List<KeyValuePair<string, UnitBlueprint>> normalizedEntries);
             bool refreshedBlueprintCache = false;
 
+            int placedCount = 0;
             if (plan != null && plan.Placements != null)
             {
                 for (int i = 0; i < plan.Placements.Count; i++)
@@ -166,32 +177,43 @@ namespace TabsAgentMod
                         }
                     }
 
-                    // Map normalized coords into world space, then snap to valid ground.
-                    float worldX = Mathf.Lerp(redBounds.min.x, redBounds.max.x, placement.X);
-                    float worldZ = Mathf.Lerp(redBounds.min.z, redBounds.max.z, placement.Y);
-                    Vector3 worldPos;
+                    // Map normalized coords into world space (or use world coords if out of [0,1]).
+                    bool useWorldCoords = placement.X < 0f || placement.X > 1f || placement.Y < 0f || placement.Y > 1f;
+                    int offsetIndex = placedCount;
+                    float worldX = useWorldCoords
+                        ? placement.X
+                        : Mathf.Lerp(redBounds.min.x, redBounds.max.x, placement.X);
+                    float worldZ = useWorldCoords
+                        ? placement.Y
+                        : Mathf.Lerp(redBounds.min.z, redBounds.max.z, placement.Y);
+                    if (hasAnchor && !useWorldCoords)
+                    {
+                        Vector3 anchorPos = anchorUnit.transform.position;
+                        Vector3 rightDir = anchorRotation * Vector3.right;
+                        Vector3 forwardDir = anchorRotation * Vector3.forward;
+                        float localSpanX = 3f;
+                        float localSpanZ = 5f;
+                        float localX = (Mathf.Clamp01(placement.X) - 0.5f) * localSpanX;
+                        float localZ = (Mathf.Clamp01(placement.Y) - 0.5f) * localSpanZ;
+                        int columns = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt(plan.Placements.Count)));
+                        int row = offsetIndex / columns;
+                        int col = offsetIndex % columns;
+                        float spacingX = 3f;
+                        float spacingZ = 4.5f;
+                        float spreadX = (col - (columns - 1) * 0.5f) * spacingX;
+                        float spreadZ = row * spacingZ;
+                        Vector3 anchored = anchorPos + rightDir * (localX + spreadX) + forwardDir * (localZ + spreadZ);
+                        worldX = anchored.x;
+                        worldZ = anchored.z;
+                    }
+                    Vector3 worldPos = default(Vector3);
                     bool hasWorldPos = false;
-                    if (cursor != null)
+                    if (!useWorldCoords && cursor != null)
                     {
                         hasWorldPos = TryGetPlacementPoint(worldX, worldZ, redBounds, cursor, out worldPos);
                     }
-                    else
-                    {
-                        worldPos = default(Vector3);
-                    }
 
-                    if (!hasWorldPos)
-                    {
-                        float worldY = redBounds.min.y;
-                        if (TryGetGroundY(worldX, worldZ, redBounds, out float groundY))
-                        {
-                            worldY = groundY;
-                            worldPos = new Vector3(worldX, worldY, worldZ);
-                            hasWorldPos = true;
-                        }
-                    }
-
-                    if (!hasWorldPos)
+                    if (!hasWorldPos && !useWorldCoords)
                     {
                         // Fallback: snap to nearest valid RED point in a precomputed grid.
                         List<Vector3> validRedPoints = GetValidRedPlacementGrid(redBounds, cursor);
@@ -200,12 +222,34 @@ namespace TabsAgentMod
                             worldPos = FindNearestPointXZ(new Vector3(worldX, 0f, worldZ), validRedPoints);
                             hasWorldPos = true;
                         }
-                        else
+                    }
+
+                    if (!hasWorldPos)
+                    {
+                        if (TryGetGroundY(worldX, worldZ, redBounds, out float groundY))
                         {
-                            _logger.LogError($"No valid placement hit for unit: {placementName}");
-                            continue;
+                            worldPos = new Vector3(worldX, groundY, worldZ);
+                            hasWorldPos = true;
+                        }
+                        else if (hasAnchor)
+                        {
+                            worldPos = anchorUnit.transform.position;
+                            hasWorldPos = true;
+                            _logger.LogWarning($"No ground hit for placement: {placementName}. Using anchor position.");
                         }
                     }
+                    if (hasAnchor)
+                    {
+                        if (TryGetGroundY(worldPos.x, worldPos.z, redBounds, out float anchorGroundY))
+                        {
+                            worldPos.y = anchorGroundY;
+                        }
+                        else
+                        {
+                            worldPos.y = anchorY;
+                        }
+                    }
+
                     Quaternion rotation;
                     // Validate the placement is on RED territory and get the facing.
                     SceneSettings.TeamRequestReslut teamResult = SceneSettings.GetTeamTerritory(worldPos, out rotation);
@@ -214,31 +258,68 @@ namespace TabsAgentMod
                         _logger.LogError($"Invalid RED placement for unit: {placement.Name}");
                         continue;
                     }
+                    if (hasAnchor)
+                    {
+                        rotation = anchorRotation;
+                    }
 
                     // Place the unit using the game's internal placement flow.
                     brush.PlaceUnitInternal(blueprint, Team.Red, worldPos, rotation, true, null);
+                    placedCount++;
                 }
             }
 
-            void AddBlueprintName(Dictionary<string, UnitBlueprint> map, string key, UnitBlueprint value)
+        }
+
+        internal static Unit FindRedAnchorUnit(Bounds? bounds = null)
+        {
+            Unit[] units = Resources.FindObjectsOfTypeAll<Unit>();
+            Unit fallback = null;
+            for (int i = 0; i < units.Length; i++)
             {
-                if (string.IsNullOrEmpty(key))
+                Unit unit = units[i];
+                if (unit == null)
                 {
-                    return;
+                    continue;
                 }
-
-                UnitBlueprint existing;
-                if (map.TryGetValue(key, out existing))
+                if (!unit.gameObject.activeInHierarchy)
                 {
-                    if (!ReferenceEquals(existing, value))
+                    continue;
+                }
+                if (!unit.gameObject.scene.IsValid())
+                {
+                    continue;
+                }
+                if (unit.Team != Team.Red)
+                {
+                    continue;
+                }
+                if (bounds.HasValue)
+                {
+                    Vector3 pos = unit.transform.position;
+                    Bounds checkBounds = bounds.Value;
+                    if (pos.x < checkBounds.min.x || pos.x > checkBounds.max.x
+                        || pos.z < checkBounds.min.z || pos.z > checkBounds.max.z)
                     {
-                        _logger.LogWarning($"Duplicate UnitBlueprint name: {key}");
+                        if (fallback == null)
+                        {
+                            fallback = unit;
+                        }
+                        continue;
                     }
-                    return;
+                    if (!TryGetGroundY(pos.x, pos.z, checkBounds, out _))
+                    {
+                        if (fallback == null)
+                        {
+                            fallback = unit;
+                        }
+                        continue;
+                    }
                 }
-
-                map.Add(key, value);
+                return unit;
             }
+
+            return fallback;
         }
 
         private static void GetBlueprintCaches(
@@ -288,17 +369,18 @@ namespace TabsAgentMod
             _normalizedEntriesCache = normalizedEntries;
             _blueprintCacheBuilt = true;
 
-            static void AddBlueprintName(Dictionary<string, UnitBlueprint> map, string key, UnitBlueprint value)
-            {
-                if (string.IsNullOrEmpty(key))
-                {
-                    return;
-                }
+        }
 
-                if (!map.ContainsKey(key))
-                {
-                    map.Add(key, value);
-                }
+        private static void AddBlueprintName(Dictionary<string, UnitBlueprint> map, string key, UnitBlueprint value)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                return;
+            }
+
+            if (!map.ContainsKey(key))
+            {
+                map.Add(key, value);
             }
         }
 

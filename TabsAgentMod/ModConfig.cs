@@ -14,6 +14,8 @@ namespace TabsAgentMod
         public string PythonExePath { get; }
         public string BridgeScriptPath { get; }
         public string OpenAiApiKey { get; }
+        public bool Campaign { get; }
+        public int CampaignBattleBudget { get; }
 
         public ModConfig(ConfigFile config)
         {
@@ -30,6 +32,9 @@ namespace TabsAgentMod
                 PythonExePath = "python";
                 BridgeScriptPath = string.Empty;
                 OpenAiApiKey = string.Empty;
+                CampaignBattleBudget = 0;
+                Campaign = false;
+
                 return;
             }
 
@@ -39,6 +44,9 @@ namespace TabsAgentMod
             PlanPollIntervalSeconds = config.Bind("General", "PlanPollIntervalSeconds", 1.0f, "Interval in seconds to poll for plans").Value;
             UseMockState = config.Bind("General", "UseMockState", false, "Whether to use mock state data").Value;
             MockBudget = config.Bind("General", "MockBudget", 1000, "Budget for mock state data").Value;
+            Campaign = config.Bind("General", "Campaign", false, "Whether to run in campaign mode").Value;
+            CampaignBattleBudget = config.Bind("General", "BattleBudget", 0, "Budget for battle mode (ignored in campaign mode)").Value;
+            
             PythonExePath = config.Bind("LLM", "PythonExePath", "python", "Path to Python executable").Value;
             BridgeScriptPath = config.Bind("LLM", "BridgeScriptPath", string.Empty, "Path to run_llm_file_bridge.py").Value;
             OpenAiApiKey = config.Bind("LLM", "OpenAiApiKey", string.Empty, "OpenAI API key for LLM bridge").Value;

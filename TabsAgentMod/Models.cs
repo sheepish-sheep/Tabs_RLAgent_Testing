@@ -16,6 +16,8 @@ namespace TabsAgentMod
         public  string Phase;
         public List<UnitCount> EnemyUnits;
         public List<UnitCount> YourUnits;
+        public bool Campaign;
+        public int CampaignBattleBudget;
     }
 
     public class Placement
