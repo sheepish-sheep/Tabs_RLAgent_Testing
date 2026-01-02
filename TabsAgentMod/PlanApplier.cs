@@ -198,7 +198,7 @@ namespace TabsAgentMod
                         int columns = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt(plan.Placements.Count)));
                         int row = offsetIndex / columns;
                         int col = offsetIndex % columns;
-                        float spacingX = 3.5f;
+                        float spacingX = 4f;
                         float spacingZ = 4.5f;
                         float spreadX = (col - (columns - 1) * 0.5f) * spacingX;
                         float spreadZ = row * spacingZ;
@@ -238,6 +238,7 @@ namespace TabsAgentMod
                             _logger.LogWarning($"No ground hit for placement: {placementName}. Using anchor position.");
                         }
                     }
+                    
                     if (hasAnchor)
                     {
                         if (TryGetGroundY(worldPos.x, worldPos.z, redBounds, out float anchorGroundY))

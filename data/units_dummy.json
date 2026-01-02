@@ -1,6 +1,6 @@
-[
+﻿[
   {
-    "name": "Clubber",
+    "name": "Club",
     "cost": 70,
     "health": 80,
     "speed": 1.0,
@@ -75,7 +75,7 @@
     "tags": ["ranged"]
   },
   {
-    "name": "Stoner",
+    "name": "Thrower_Boulder",
     "cost": 160,
     "health": 50,
     "speed": 1.0,
@@ -209,7 +209,7 @@
     "tags": ["melee"]
   },
   {
-    "name": "Farmer",
+    "name": "Pitchfork",
     "cost": 80,
     "health": 60,
     "speed": 1.0,
@@ -234,7 +234,7 @@
     "tags": ["melee"]
   },
   {
-    "name": "Hay Baler",
+    "name": "Hay",
     "cost": 140,
     "health": 80,
     "speed": 1.0,
@@ -284,7 +284,7 @@
     "tags": ["ranged", "aoe"]
   },
   {
-    "name": "Harvester",
+    "name": "Scythe",
     "cost": 500,
     "health": 600,
     "speed": 1.0,
@@ -359,7 +359,7 @@
     "tags": ["ranged", "aoe"]
   },
   {
-    "name": "Bard",
+    "name": "Banjo",
     "cost": 60,
     "health": 60,
     "speed": 1.0,
@@ -434,7 +434,7 @@
     "tags": ["ranged"]
   },
   {
-    "name": "Healer",
+    "name": "Priest",
     "cost": 180,
     "health": 25,
     "speed": 1.0,
@@ -543,7 +543,7 @@
     "tags": ["melee", "tank"]
   },
   {
-    "name": "Shield Bearer",
+    "name": "Shield_Roman",
     "cost": 100,
     "health": 60,
     "speed": 1.0,
@@ -879,7 +879,7 @@
     "tags": ["melee"]
   },
   {
-    "name": "Longship",
+    "name": "VikingBoat",
     "cost": 1000,
     "health": 1400,
     "speed": 0.3,
@@ -1079,7 +1079,7 @@
     "tags": ["ranged", "aoe"]
   },
   {
-    "name": "Monkey King",
+    "name": "Monkey king",
     "cost": 2000,
     "health": 529,
     "speed": 1.0,
@@ -1179,7 +1179,7 @@
     "tags": ["ranged"]
   },
   {
-    "name": "Musketeer",
+    "name": "Musket",
     "cost": 250,
     "health": 80,
     "speed": 1.0,
@@ -1590,7 +1590,7 @@
     "tags": ["melee"]
   },
   {
-    "name": "Pumpkin Catapult",
+    "name": "SpookyCatapult",
     "cost": 1000,
     "health": 300,
     "speed": 1.0,
@@ -1915,7 +1915,7 @@
     "tags": ["ranged"]
   },
   {
-    "name": "Blowdarter",
+    "name": "Blowdart",
     "cost": 220,
     "health": 80,
     "speed": 1.0,
@@ -1990,7 +1990,7 @@
     "tags": ["aoe"]
   },
   {
-    "name": "Boxer",
+    "name": "Leg_Boxer",
     "cost": 450,
     "health": 292,
     "speed": 1.0,
@@ -2149,7 +2149,7 @@
     "tags": ["ranged", "melee"]
   },
   {
-    "name": "Tank",
+    "name": "Leg_Tank",
     "cost": 6000,
     "health": 4500,
     "speed": 1.0,
@@ -2258,7 +2258,7 @@
     "tags": ["giant", "melee"]
   },
   {
-    "name": "Devout Gauntlet",
+    "name": "Gauntlet",
     "cost": 200,
     "health": 146,
     "speed": 1.0,
@@ -2317,7 +2317,7 @@
     "tags": ["melee", "tank"]
   },
   {
-    "name": "Radiant Glaive",
+    "name": "Thrown_Glaive",
     "cost": 500,
     "health": 180,
     "speed": 1.0,
@@ -2410,7 +2410,7 @@
     "tags": ["ranged", "aoe"]
   },
   {
-    "name": "Sacred Elephant",
+    "name": "Elephant",
     "cost": 2000,
     "health": 1818,
     "speed": 1.2,
@@ -2519,7 +2519,7 @@
     "tags": ["melee", "tank"]
   },
   {
-    "name": "Mad Mechanic",
+    "name": "Mechanic",
     "cost": 500,
     "health": 242,
     "speed": 1.0,
@@ -2771,7 +2771,7 @@
     "tags": ["melee"]
   },
   {
-    "name": "The Teacher",
+    "name": "Teacher",
     "cost": 200,
     "health": 130,
     "speed": 1.0,
@@ -3064,7 +3064,7 @@
     "tags": ["melee", "aoe"]
   },
   {
-    "name": "CLAMS",
+    "name": "Thrower_Clam",
     "cost": 500,
     "health": 72,
     "speed": 1.0,
@@ -3089,7 +3089,7 @@
     "tags": ["ranged", "aoe"]
   },
   {
-    "name": "Present Elf",
+    "name": "Thrower_Present",
     "cost": 500,
     "health": 50,
     "speed": 1.0,
@@ -3164,7 +3164,7 @@
     "tags": ["melee", "aoe"]
   },
   {
-    "name": "Bank Robbers",
+    "name": "Safe_Thrower",
     "cost": 850,
     "health": 350,
     "speed": 1.0,
@@ -3298,7 +3298,7 @@
     "tags": ["ranged", "aoe"]
   },
   {
-    "name": "Wheelbarrow Dragon",
+    "name": "Wheelbarrow_Fire",
     "cost": 1400,
     "health": 1500,
     "speed": 3.0,
@@ -3466,7 +3466,7 @@
     "tags": ["ranged"]
   },
   {
-    "name": "Blackbeard",
+    "name": "BlackBeard",
     "cost": 2600,
     "health": 3000,
     "speed": 1.0,
@@ -3500,7 +3500,7 @@
     "tags": ["giant", "tank", "aoe"]
   },
   {
-    "name": "Samurai Giant",
+    "name": "Samurai giant",
     "cost": 3000,
     "health": 4230,
     "speed": 1.0,
@@ -3550,7 +3550,7 @@
     "tags": ["ranged", "aoe"]
   },
   {
-    "name": "Lady Red Jade",
+    "name": "RedJade",
     "cost": 3500,
     "health": 1268,
     "speed": 1.0,
