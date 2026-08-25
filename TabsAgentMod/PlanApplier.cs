@@ -17,6 +17,7 @@ namespace TabsAgentMod
     public interface IPlanApplier
     {
         void Apply(PlanPayload plan);
+        void Apply(PlanPayload plan, Vector3 anchorPos, Quaternion anchorRotation, string anchorSource);
     }
 
     public class PlanApplier : IPlanApplier
@@ -39,6 +40,22 @@ namespace TabsAgentMod
 
         public void Apply(PlanPayload plan)
         {
+            if (!TryResolveAnchor(out Vector3 anchorPos, out Quaternion anchorRotation, out string anchorSource))
+            {
+                _logger.LogError("No valid anchor: cursor isn't over RED territory and no RED unit is placed to use as a fallback anchor.");
+                return;
+            }
+            Apply(plan, anchorPos, anchorRotation, anchorSource);
+        }
+
+        // Applies a plan using an already-resolved anchor instead of resolving one fresh here. Callers
+        // that trigger an async LLM call (pressing P) should resolve the anchor at press-time via
+        // TryResolveAnchor and pass it through once the plan comes back, rather than letting it get
+        // re-resolved later: the LLM call can take several seconds, during which the cursor (the primary
+        // anchor source) can easily have moved — silently losing the placement, or anchoring it somewhere
+        // the player never intended, if it's resolved fresh at apply-time instead.
+        public void Apply(PlanPayload plan, Vector3 anchorPos, Quaternion anchorRotation, string anchorSource)
+        {
             BaseGameMode gameMode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
             GameStateManager gameStateManager = gameMode?.GameStateManager;
             if (gameStateManager == null || gameStateManager.GameState != GameState.PlacementState)
@@ -54,51 +71,6 @@ namespace TabsAgentMod
                 return;
             }
             PlacementCursor cursor = brush.Cursor;
-
-            // Resolve an anchor position/rotation to build placement bounds around. Prefer wherever the
-            // player's cursor currently is — the same raycast (mask + camera ray) the placement cursor
-            // itself uses, so it's always real, on-map ground — and only fall back to a placed RED unit
-            // if the cursor isn't currently over valid RED territory.
-            Vector3 anchorPos;
-            Quaternion anchorRotation;
-            string anchorSource;
-            bool haveCursorAnchor = false;
-            if (brush.RaycastMap(out Vector3 cursorPos))
-            {
-                SceneSettings.TeamRequestReslut cursorTeamResult = SceneSettings.GetTeamTerritory(cursorPos, out Quaternion cursorRotation);
-                if (cursorTeamResult.CanPlace && cursorTeamResult.Team == Team.Red)
-                {
-                    anchorPos = cursorPos;
-                    anchorRotation = cursorRotation;
-                    anchorSource = "cursor";
-                    haveCursorAnchor = true;
-                }
-                else
-                {
-                    anchorPos = default(Vector3);
-                    anchorRotation = Quaternion.identity;
-                    anchorSource = null;
-                }
-            }
-            else
-            {
-                anchorPos = default(Vector3);
-                anchorRotation = Quaternion.identity;
-                anchorSource = null;
-            }
-
-            if (!haveCursorAnchor)
-            {
-                Unit anchorUnit = FindRedAnchorUnit();
-                if (anchorUnit == null)
-                {
-                    _logger.LogError("No valid anchor: cursor isn't over RED territory and no RED unit is placed to use as a fallback anchor.");
-                    return;
-                }
-                anchorPos = anchorUnit.transform.position;
-                anchorRotation = anchorUnit.transform.rotation;
-                anchorSource = $"unit:{anchorUnit.name}";
-            }
             float anchorY = anchorPos.y;
 
             // Resolve RED-side placement bounds as a fixed-size box around the known-good anchor position.
@@ -292,22 +264,41 @@ namespace TabsAgentMod
 
         }
 
-        // Mirrors the anchor resolution at the top of Apply() (cursor over RED territory, else a placed
-        // RED unit) without actually applying anything — lets callers avoid running the LLM bridge when
-        // placement is guaranteed to fail anyway.
-        internal static bool HasValidAnchor()
+        // Resolves an anchor position/rotation to build placement bounds around: prefer wherever the
+        // player's cursor currently is (the same raycast — mask + camera ray — the placement cursor
+        // itself uses, so it's always real, on-map ground), falling back to a placed RED unit if the
+        // cursor isn't currently over valid RED territory. Callers that trigger an async LLM call should
+        // call this once up front and reuse the result (see the Apply overload above) rather than calling
+        // it again later, since the cursor position can change during the async gap.
+        internal static bool TryResolveAnchor(out Vector3 anchorPos, out Quaternion anchorRotation, out string anchorSource)
         {
             BaseGameMode gameMode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
             UnitPlacementBrush brush = gameMode?.Brush;
             if (brush != null && brush.RaycastMap(out Vector3 cursorPos))
             {
-                SceneSettings.TeamRequestReslut teamResult = SceneSettings.GetTeamTerritory(cursorPos, out _);
-                if (teamResult.CanPlace && teamResult.Team == Team.Red)
+                SceneSettings.TeamRequestReslut cursorTeamResult = SceneSettings.GetTeamTerritory(cursorPos, out Quaternion cursorRotation);
+                if (cursorTeamResult.CanPlace && cursorTeamResult.Team == Team.Red)
                 {
+                    anchorPos = cursorPos;
+                    anchorRotation = cursorRotation;
+                    anchorSource = "cursor";
                     return true;
                 }
             }
-            return FindRedAnchorUnit() != null;
+
+            Unit anchorUnit = FindRedAnchorUnit();
+            if (anchorUnit != null)
+            {
+                anchorPos = anchorUnit.transform.position;
+                anchorRotation = anchorUnit.transform.rotation;
+                anchorSource = $"unit:{anchorUnit.name}";
+                return true;
+            }
+
+            anchorPos = default(Vector3);
+            anchorRotation = Quaternion.identity;
+            anchorSource = null;
+            return false;
         }
 
         internal static Unit FindRedAnchorUnit(Bounds? bounds = null)

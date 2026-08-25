@@ -77,3 +77,13 @@ python run_llm_file_bridge.py --once
 # Custom IO directory
 python run_llm_file_bridge.py --io-dir "C:\path\to\io"
 ```
+
+### In-game: pressing P
+
+During placement, press **P** to have the mod write `state.json`, run the LLM bridge, and
+apply the resulting plan. Placements are anchored to wherever your mouse cursor is when
+you press P (falling back to an existing placed RED unit if the cursor isn't over RED
+territory) — the mod captures that spot at the moment you press P, not whenever the LLM
+call finishes, since the LLM call is asynchronous and can take several seconds. Point your
+cursor at RED territory (or place a RED unit) *before* pressing P; moving the mouse
+elsewhere afterward while it's thinking won't affect where the plan gets placed.

@@ -20,6 +20,10 @@ namespace TabsAgentMod
         private Process _llmProcess;
         private bool _pendingPlanApply;
         private string _lastAppliedPlanStateId;
+        private bool _hasPendingAnchor;
+        private Vector3 _pendingAnchorPos;
+        private Quaternion _pendingAnchorRotation;
+        private string _pendingAnchorSource;
 
         private void Awake()
         {
@@ -45,11 +49,16 @@ namespace TabsAgentMod
             {
                 Logger.LogInfo("P pressed: writing state and running LLM bridge.");
                 WriteStateIfReady();
-                if (!PlanApplier.HasValidAnchor())
+                // Resolve the anchor now, at press-time, and reuse it once the plan comes back — the LLM
+                // call below is async and can take several seconds, during which the cursor (the primary
+                // anchor source) can easily move; resolving fresh later would silently lose the placement
+                // or anchor it somewhere the player never intended.
+                if (!PlanApplier.TryResolveAnchor(out _pendingAnchorPos, out _pendingAnchorRotation, out _pendingAnchorSource))
                 {
                     Logger.LogError("No valid anchor: point the cursor at RED territory or place a RED unit before running the LLM.");
                     return;
                 }
+                _hasPendingAnchor = true;
                 bool started = TryRunLlmOnce();
                 if (!started)
                 {
@@ -101,7 +110,15 @@ namespace TabsAgentMod
             {
                 return;
             }
-            _applier.Apply(plan);
+            if (_hasPendingAnchor)
+            {
+                _hasPendingAnchor = false;
+                _applier.Apply(plan, _pendingAnchorPos, _pendingAnchorRotation, _pendingAnchorSource);
+            }
+            else
+            {
+                _applier.Apply(plan);
+            }
             if (!string.IsNullOrWhiteSpace(plan.StateId))
             {
                 _lastAppliedPlanStateId = plan.StateId;
