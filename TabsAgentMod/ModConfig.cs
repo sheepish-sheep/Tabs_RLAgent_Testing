@@ -13,7 +13,7 @@ namespace TabsAgentMod
         public int MockBudget { get; }
         public string PythonExePath { get; }
         public string BridgeScriptPath { get; }
-        public string OpenAiApiKey { get; }
+        public string AnthropicApiKey { get; }
         public bool Campaign { get; }
         public int CampaignBattleBudget { get; }
 
@@ -31,7 +31,7 @@ namespace TabsAgentMod
                 MockBudget = 1000;
                 PythonExePath = "python";
                 BridgeScriptPath = string.Empty;
-                OpenAiApiKey = string.Empty;
+                AnthropicApiKey = string.Empty;
                 CampaignBattleBudget = 0;
                 Campaign = false;
 
@@ -49,7 +49,7 @@ namespace TabsAgentMod
             
             PythonExePath = config.Bind("LLM", "PythonExePath", "python", "Path to Python executable").Value;
             BridgeScriptPath = config.Bind("LLM", "BridgeScriptPath", string.Empty, "Path to run_llm_file_bridge.py").Value;
-            OpenAiApiKey = config.Bind("LLM", "OpenAiApiKey", string.Empty, "OpenAI API key for LLM bridge").Value;
+            AnthropicApiKey = config.Bind("LLM", "AnthropicApiKey", string.Empty, "Anthropic API key for LLM bridge").Value;
 
         }
     }

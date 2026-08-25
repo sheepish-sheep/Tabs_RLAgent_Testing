@@ -1,12 +1,10 @@
-"""LLM-driven strategy provider using LangChain with structured output."""
-
 from __future__ import annotations
 
 import json
 from typing import Dict, List, Optional
 
+from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 
 from core import models
@@ -24,7 +22,7 @@ class ArmyPlan(BaseModel):
 
 class StrategyLLM:
     def __init__(self, model=None):
-        self.model = model or ChatOpenAI(model="gpt-4o")
+        self.model = model or ChatAnthropic(model="claude-opus-5")
         self.structured_model = self.model.with_structured_output(ArmyPlan)
         self.prompt = ChatPromptTemplate.from_messages(
             [

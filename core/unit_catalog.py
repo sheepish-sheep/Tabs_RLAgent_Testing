@@ -10,7 +10,7 @@ from core import models
 
 
 def load_unit_catalog(path: Path) -> Dict[str, models.Unit]:
-    with path.open("r", encoding="utf-8") as f:
+    with path.open("r", encoding="utf-8-sig") as f:
         raw = json.load(f)
 
     catalog: Dict[str, models.Unit] = {}

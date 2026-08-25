@@ -46,60 +46,6 @@ namespace TabsAgentMod
                 _logger.LogError("Current game mode is not in PlacementState.");
                 return;
             }
-            // Resolve RED-side placement bounds for normalized coord mapping.
-            // Find a RED-side placement square to map normalized coords into world space.
-            UnitPlacementSquare[] squares = Resources.FindObjectsOfTypeAll<UnitPlacementSquare>();
-            UnitPlacementSquare redSquare = null;
-            Bounds redBounds = default(Bounds);
-            for (int i = 0; i < squares.Length; i++)
-            {
-                UnitPlacementSquare square = squares[i];
-                if (square == null)
-                {
-                    continue;
-                }
-                if (!square.gameObject.scene.IsValid())
-                {
-                    continue;
-                }
-
-                Bounds squareBounds;
-                Collider squareCollider = square.GetComponentInChildren<Collider>(true);
-                if (squareCollider != null)
-                {
-                    squareBounds = squareCollider.bounds;
-                }
-                else
-                {
-                    Renderer squareRenderer = square.GetComponentInChildren<Renderer>(true);
-                    if (squareRenderer == null)
-                    {
-                        continue;
-                    }
-                    squareBounds = squareRenderer.bounds;
-                }
-                Quaternion rotation;
-                // Use scene territory to detect which team owns this square.
-                SceneSettings.TeamRequestReslut teamResult = SceneSettings.GetTeamTerritory(squareBounds.center, out rotation);
-                if (!teamResult.CanPlace || teamResult.Team != Team.Red)
-                {
-                    continue;
-                }
-
-                redSquare = square;
-                redBounds = squareBounds;
-                break;
-            }
-
-            if (redSquare == null)
-            {
-                if (!TryGetRedBoundsFromScene(out redBounds))
-                {
-                    _logger.LogError("No RED placement bounds found.");
-                    return;
-                }
-            }
-
             // Brush/cursor provide placement APIs and masks.
             UnitPlacementBrush brush = gameMode.Brush;
             if (brush == null)
@@ -108,15 +54,88 @@ namespace TabsAgentMod
                 return;
             }
             PlacementCursor cursor = brush.Cursor;
-            Unit anchorUnit = FindRedAnchorUnit(redBounds);
-            bool hasAnchor = anchorUnit != null;
-            if (!hasAnchor)
+
+            // Resolve an anchor position/rotation to build placement bounds around. Prefer wherever the
+            // player's cursor currently is — the same raycast (mask + camera ray) the placement cursor
+            // itself uses, so it's always real, on-map ground — and only fall back to a placed RED unit
+            // if the cursor isn't currently over valid RED territory.
+            Vector3 anchorPos;
+            Quaternion anchorRotation;
+            string anchorSource;
+            bool haveCursorAnchor = false;
+            if (brush.RaycastMap(out Vector3 cursorPos))
             {
-                _logger.LogError("Red anchor unit not found. Place a RED unit to use as an anchor.");
-                return;
+                SceneSettings.TeamRequestReslut cursorTeamResult = SceneSettings.GetTeamTerritory(cursorPos, out Quaternion cursorRotation);
+                if (cursorTeamResult.CanPlace && cursorTeamResult.Team == Team.Red)
+                {
+                    anchorPos = cursorPos;
+                    anchorRotation = cursorRotation;
+                    anchorSource = "cursor";
+                    haveCursorAnchor = true;
+                }
+                else
+                {
+                    anchorPos = default(Vector3);
+                    anchorRotation = Quaternion.identity;
+                    anchorSource = null;
+                }
             }
-            float anchorY = hasAnchor ? anchorUnit.transform.position.y : 0f;
-            Quaternion anchorRotation = hasAnchor ? anchorUnit.transform.rotation : Quaternion.identity;
+            else
+            {
+                anchorPos = default(Vector3);
+                anchorRotation = Quaternion.identity;
+                anchorSource = null;
+            }
+
+            if (!haveCursorAnchor)
+            {
+                Unit anchorUnit = FindRedAnchorUnit();
+                if (anchorUnit == null)
+                {
+                    _logger.LogError("No valid anchor: cursor isn't over RED territory and no RED unit is placed to use as a fallback anchor.");
+                    return;
+                }
+                anchorPos = anchorUnit.transform.position;
+                anchorRotation = anchorUnit.transform.rotation;
+                anchorSource = $"unit:{anchorUnit.name}";
+            }
+            float anchorY = anchorPos.y;
+
+            // Resolve RED-side placement bounds as a fixed-size box around the known-good anchor position.
+            const float localHalfX = 40f;
+            const float localHalfZ = 40f;
+            const float localHalfY = 25f;
+            Bounds redBounds = default(Bounds);
+            redBounds.SetMinMax(
+                new Vector3(anchorPos.x - localHalfX, anchorPos.y - localHalfY, anchorPos.z - localHalfZ),
+                new Vector3(anchorPos.x + localHalfX, anchorPos.y + localHalfY, anchorPos.z + localHalfZ));
+
+            // Battlefields aren't always aligned to world X/Z on every map — express placement coordinates
+            // relative to the anchor's actual facing (which SceneSettings/the unit's own rotation already
+            // gets correct per map) instead of assuming world Z is always "toward the enemy." Project
+            // redBounds' corners onto the anchor's right/forward axes to get the extents in that local frame.
+            Vector3 rightDir = anchorRotation * Vector3.right;
+            Vector3 forwardDir = anchorRotation * Vector3.forward;
+            float minRight = float.MaxValue, maxRight = float.MinValue;
+            float minForward = float.MaxValue, maxForward = float.MinValue;
+            for (int cx = 0; cx < 2; cx++)
+            {
+                float cornerX = cx == 0 ? redBounds.min.x : redBounds.max.x;
+                for (int cz = 0; cz < 2; cz++)
+                {
+                    float cornerZ = cz == 0 ? redBounds.min.z : redBounds.max.z;
+                    Vector3 offset = new Vector3(cornerX - anchorPos.x, 0f, cornerZ - anchorPos.z);
+                    float r = Vector3.Dot(offset, rightDir);
+                    float f = Vector3.Dot(offset, forwardDir);
+                    if (r < minRight) minRight = r;
+                    if (r > maxRight) maxRight = r;
+                    if (f < minForward) minForward = f;
+                    if (f > maxForward) maxForward = f;
+                }
+            }
+
+            _logger.LogInfo($"redBounds center={redBounds.center} size={redBounds.size} min={redBounds.min} max={redBounds.max}");
+            _logger.LogInfo($"anchor source={anchorSource} pos={anchorPos} forward={forwardDir} right={rightDir}");
 
             // Build or reuse blueprint name caches for fast lookup.
             GetBlueprintCaches(out Dictionary<string, UnitBlueprint> blueprintByName,
@@ -178,33 +197,24 @@ namespace TabsAgentMod
                     }
 
                     // Map normalized coords into world space (or use world coords if out of [0,1]).
+                    // X/Y are lerped in the anchor's local right/forward frame (not raw world X/Z) so
+                    // "higher y = front line" means toward the enemy on every map, regardless of how
+                    // that map's battlefield happens to be rotated in world space. The final clamp below
+                    // still guarantees the result stays inside redBounds.
                     bool useWorldCoords = placement.X < 0f || placement.X > 1f || placement.Y < 0f || placement.Y > 1f;
-                    int offsetIndex = placedCount;
-                    float worldX = useWorldCoords
-                        ? placement.X
-                        : Mathf.Lerp(redBounds.min.x, redBounds.max.x, placement.X);
-                    float worldZ = useWorldCoords
-                        ? placement.Y
-                        : Mathf.Lerp(redBounds.min.z, redBounds.max.z, placement.Y);
-                    if (hasAnchor && !useWorldCoords)
+                    float worldX, worldZ;
+                    if (useWorldCoords)
                     {
-                        Vector3 anchorPos = anchorUnit.transform.position;
-                        Vector3 rightDir = anchorRotation * Vector3.right;
-                        Vector3 forwardDir = anchorRotation * Vector3.forward;
-                        float localSpanX = 3f;
-                        float localSpanZ = 5f;
-                        float localX = (Mathf.Clamp01(placement.X) - 0.5f) * localSpanX;
-                        float localZ = (Mathf.Clamp01(placement.Y) - 0.5f) * localSpanZ;
-                        int columns = Mathf.Max(1, Mathf.CeilToInt(Mathf.Sqrt(plan.Placements.Count)));
-                        int row = offsetIndex / columns;
-                        int col = offsetIndex % columns;
-                        float spacingX = 4f;
-                        float spacingZ = 4.5f;
-                        float spreadX = (col - (columns - 1) * 0.5f) * spacingX;
-                        float spreadZ = row * spacingZ;
-                        Vector3 anchored = anchorPos + rightDir * (localX + spreadX) + forwardDir * (localZ + spreadZ);
-                        worldX = anchored.x;
-                        worldZ = anchored.z;
+                        worldX = placement.X;
+                        worldZ = placement.Y;
+                    }
+                    else
+                    {
+                        float localRight = Mathf.Lerp(minRight, maxRight, placement.X);
+                        float localForward = Mathf.Lerp(minForward, maxForward, placement.Y);
+                        Vector3 target = anchorPos + rightDir * localRight + forwardDir * localForward;
+                        worldX = target.x;
+                        worldZ = target.z;
                     }
                     Vector3 worldPos = default(Vector3);
                     bool hasWorldPos = false;
@@ -231,24 +241,35 @@ namespace TabsAgentMod
                             worldPos = new Vector3(worldX, groundY, worldZ);
                             hasWorldPos = true;
                         }
-                        else if (hasAnchor)
+                        else
                         {
-                            worldPos = anchorUnit.transform.position;
+                            worldPos = anchorPos;
                             hasWorldPos = true;
                             _logger.LogWarning($"No ground hit for placement: {placementName}. Using anchor position.");
                         }
                     }
                     
-                    if (hasAnchor)
+                    if (!useWorldCoords)
                     {
-                        if (TryGetGroundY(worldPos.x, worldPos.z, redBounds, out float anchorGroundY))
+                        // Final safety net: clamp into redBounds regardless of which fallback path
+                        // produced worldPos (e.g. the anchor-position fallback above can sit outside
+                        // redBounds when FindRedAnchorUnit had to return an out-of-bounds fallback unit).
+                        float clampedX = Mathf.Clamp(worldPos.x, redBounds.min.x, redBounds.max.x);
+                        float clampedZ = Mathf.Clamp(worldPos.z, redBounds.min.z, redBounds.max.z);
+                        if (clampedX != worldPos.x || clampedZ != worldPos.z)
                         {
-                            worldPos.y = anchorGroundY;
+                            worldPos.x = clampedX;
+                            worldPos.z = clampedZ;
                         }
-                        else
-                        {
-                            worldPos.y = anchorY;
-                        }
+                    }
+
+                    if (TryGetGroundY(worldPos.x, worldPos.z, redBounds, out float anchorGroundY))
+                    {
+                        worldPos.y = anchorGroundY;
+                    }
+                    else
+                    {
+                        worldPos.y = anchorY;
                     }
 
                     Quaternion rotation;
@@ -259,10 +280,9 @@ namespace TabsAgentMod
                         _logger.LogError($"Invalid RED placement for unit: {placement.Name}");
                         continue;
                     }
-                    if (hasAnchor)
-                    {
-                        rotation = anchorRotation;
-                    }
+                    rotation = anchorRotation;
+
+                    _logger.LogInfo($"Placing {placementName} at {worldPos} (normalized x={placement.X:F2} y={placement.Y:F2})");
 
                     // Place the unit using the game's internal placement flow.
                     brush.PlaceUnitInternal(blueprint, Team.Red, worldPos, rotation, true, null);
@@ -270,6 +290,24 @@ namespace TabsAgentMod
                 }
             }
 
+        }
+
+        // Mirrors the anchor resolution at the top of Apply() (cursor over RED territory, else a placed
+        // RED unit) without actually applying anything — lets callers avoid running the LLM bridge when
+        // placement is guaranteed to fail anyway.
+        internal static bool HasValidAnchor()
+        {
+            BaseGameMode gameMode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
+            UnitPlacementBrush brush = gameMode?.Brush;
+            if (brush != null && brush.RaycastMap(out Vector3 cursorPos))
+            {
+                SceneSettings.TeamRequestReslut teamResult = SceneSettings.GetTeamTerritory(cursorPos, out _);
+                if (teamResult.CanPlace && teamResult.Team == Team.Red)
+                {
+                    return true;
+                }
+            }
+            return FindRedAnchorUnit() != null;
         }
 
         internal static Unit FindRedAnchorUnit(Bounds? bounds = null)
@@ -383,89 +421,6 @@ namespace TabsAgentMod
             {
                 map.Add(key, value);
             }
-        }
-
-        private static bool TryGetRedBoundsFromScene(out Bounds redBounds)
-        {
-            redBounds = default(Bounds);
-            // Fallback: scan renderers to approximate scene bounds.
-            Renderer[] renderers = Resources.FindObjectsOfTypeAll<Renderer>();
-            bool hasSceneBounds = false;
-            Bounds sceneBounds = default(Bounds);
-            for (int i = 0; i < renderers.Length; i++)
-            {
-                Renderer renderer = renderers[i];
-                if (renderer == null)
-                {
-                    continue;
-                }
-                if (!renderer.gameObject.scene.IsValid())
-                {
-                    continue;
-                }
-                if (!hasSceneBounds)
-                {
-                    sceneBounds = renderer.bounds;
-                    hasSceneBounds = true;
-                }
-                else
-                {
-                    sceneBounds.Encapsulate(renderer.bounds);
-                }
-            }
-
-            if (!hasSceneBounds)
-            {
-                return false;
-            }
-
-            const int steps = 9;
-            bool foundRed = false;
-            float minX = 0f;
-            float maxX = 0f;
-            float minZ = 0f;
-            float maxZ = 0f;
-            float y = sceneBounds.center.y;
-            for (int ix = 0; ix < steps; ix++)
-            {
-                float tx = ix / (float)(steps - 1);
-                float x = Mathf.Lerp(sceneBounds.min.x, sceneBounds.max.x, tx);
-                for (int iz = 0; iz < steps; iz++)
-                {
-                    float tz = iz / (float)(steps - 1);
-                    float z = Mathf.Lerp(sceneBounds.min.z, sceneBounds.max.z, tz);
-                    Quaternion rotation;
-                    SceneSettings.TeamRequestReslut teamResult = SceneSettings.GetTeamTerritory(new Vector3(x, y, z), out rotation);
-                    if (!teamResult.CanPlace || teamResult.Team != Team.Red)
-                    {
-                        continue;
-                    }
-
-                    if (!foundRed)
-                    {
-                        minX = maxX = x;
-                        minZ = maxZ = z;
-                        foundRed = true;
-                    }
-                    else
-                    {
-                        if (x < minX) minX = x;
-                        if (x > maxX) maxX = x;
-                        if (z < minZ) minZ = z;
-                        if (z > maxZ) maxZ = z;
-                    }
-                }
-            }
-
-            if (!foundRed)
-            {
-                return false;
-            }
-
-            Vector3 min = new Vector3(minX, sceneBounds.min.y, minZ);
-            Vector3 max = new Vector3(maxX, sceneBounds.max.y, maxZ);
-            redBounds.SetMinMax(min, max);
-            return true;
         }
 
         private static bool TryGetGroundY(float x, float z, Bounds bounds, out float y)

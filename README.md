@@ -1,55 +1,79 @@
-# TABS Agent (mod-based)
+# TABS Agent
 
-Goal: a TABS mod reads real game state and places units, while a Python LangChain
-LLM builds the plan. No screen capture.
+An AI-powered army builder for Totally Accurate Battle Simulator. A C# mod reads real game state and places units, while a Python LangChain LLM builds the plan.
 
-## How it works
-- C# mod writes `state.json` to disk.
-- Python reads it, calls the LLM, writes `plan.json`.
-- C# mod polls `plan.json` and applies the placements in-game.
+## How It Works
 
-Default IO directory:
-`%LOCALAPPDATA%\TabsAgentModIO\`
+1. C# mod writes `state.json` to disk with enemy army info and budget
+2. Python reads it, calls the LLM, writes `plan.json` with unit placements
+3. C# mod polls `plan.json` and spawns units in-game
 
-## Project layout
-- `TabsAgentMod/`: C# BepInEx plugin (reads state, applies plan)
-- `run_llm_file_bridge.py`: Python bridge (state.json -> plan.json)
-- `core/strategy_llm.py`: LangChain prompt + structured plan
-- `core/unit_catalog.py`: load unit data
-- `data/units_dummy.json`: unit catalog placeholder
-- `docs/CSharpCrashCourse.md`: C# install + build steps
+Default IO directory: `%LOCALAPPDATA%\TabsAgentModIO\`
 
-## Download order (do this first)
-1) BepInEx 5 (x64): https://github.com/BepInEx/BepInEx/releases
-2) Visual Studio 2022: https://visualstudio.microsoft.com/downloads/
-3) .NET Framework 4.7.2 Developer Pack: https://dotnet.microsoft.com/download/dotnet-framework/net472
-4) ILSpy (assembly browser): https://github.com/icsharpcode/ILSpy/releases
-5) UnityExplorer (optional): https://github.com/sinai-dev/UnityExplorer/releases
+## Project Layout
 
-## Install order (what to do with the downloads)
-1) Unzip BepInEx into:
+```
+TabsAgentMod/           C# BepInEx plugin (reads state, applies plan)
+core/                   Python strategy logic
+  strategy_llm.py       LangChain prompt + structured output
+  models.py             Domain models (Unit, Army, GameState)
+  unit_catalog.py       Load unit data from JSON
+data/
+  units_dummy.json      Unit catalog placeholder
+run_llm_file_bridge.py  Python bridge (state.json -> plan.json)
+```
+
+## Prerequisites
+
+1. [BepInEx 5 (x64)](https://github.com/BepInEx/BepInEx/releases)
+2. [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/)
+3. [.NET Framework 4.7.2 Developer Pack](https://dotnet.microsoft.com/download/dotnet-framework/net472)
+4. Python 3.10+
+5. [ILSpy](https://github.com/icsharpcode/ILSpy/releases) (optional, for exploring game assemblies)
+
+## Installation
+
+1. Unzip BepInEx into your TABS folder:
    `C:\Program Files (x86)\Steam\steamapps\common\Totally Accurate Battle Simulator`
-2) Run TABS once, then exit. This creates `BepInEx/`.
-3) Open `TabsAgentMod/TabsAgentMod.csproj` in Visual Studio.
-4) Implement the C# stubs in `TabsAgentMod/` (see `docs/Plan.md`).
-5) Build the project, then copy `TabsAgentMod.dll` to:
+
+2. Run TABS once, then exit (creates the `BepInEx/` folder structure)
+
+3. Open `TabsAgentMod/TabsAgentMod.csproj` in Visual Studio and build
+
+4. Copy `TabsAgentMod.dll` to:
    `...\Totally Accurate Battle Simulator\BepInEx\plugins\`
-6) Run TABS and confirm `BepInEx/LogOutput.log` shows the mod loaded.
-7) In a terminal, run: `python run_llm_file_bridge.py`
 
-## File plan (what to implement first)
-1) `TabsAgentMod/Models.cs`:
-   - Define the JSON data model (state + plan payloads).
-2) `TabsAgentMod/ModConfig.cs`:
-   - Bind config values (IO directory, polling, mock mode).
-3) `TabsAgentMod/FileBridge.cs`:
-   - Read/write JSON files and detect changes.
-4) `TabsAgentMod/Plugin.cs`:
-   - Wire the loop that writes state and reads plans.
-5) `TabsAgentMod/Collectors.cs`:
-   - Mock collector first, then real game state.
-6) `TabsAgentMod/PlanApplier.cs`:
-   - Convert placements into in-game spawns.
+5. Run TABS once, then exit (generates `BepInEx/config/com.tabsagent.mod.cfg`)
 
-For more detail, open `docs/CSharpCrashCourse.md`.
-For the step-by-step plan, open `docs/Plan.md`.
+6. In that config file, under `[LLM]`, set `BridgeScriptPath` to the full path of
+   `run_llm_file_bridge.py` on your machine (and `PythonExePath` too, if `python` isn't
+   on your PATH). This is what lets the mod launch the bridge itself when you press P
+   in-game, instead of you having to run it manually in a terminal.
+
+7. Run TABS and confirm `BepInEx/LogOutput.log` shows `"TabsAgent Mod loaded."`
+
+## Python Setup
+
+```bash
+pip install -r requirements.txt
+```
+
+Set your Anthropic API key in a `.env` file:
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+## Usage
+
+The Python bridge watches for `state.json` and generates `plan.json` automatically.
+
+```bash
+# Continuous watch mode (default)
+python run_llm_file_bridge.py
+
+# Single run mode
+python run_llm_file_bridge.py --once
+
+# Custom IO directory
+python run_llm_file_bridge.py --io-dir "C:\path\to\io"
+```

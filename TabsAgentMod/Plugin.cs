@@ -45,9 +45,9 @@ namespace TabsAgentMod
             {
                 Logger.LogInfo("P pressed: writing state and running LLM bridge.");
                 WriteStateIfReady();
-                if (PlanApplier.FindRedAnchorUnit() == null)
+                if (!PlanApplier.HasValidAnchor())
                 {
-                    Logger.LogError("Red anchor unit not found. Place a RED unit before running the LLM.");
+                    Logger.LogError("No valid anchor: point the cursor at RED territory or place a RED unit before running the LLM.");
                     return;
                 }
                 bool started = TryRunLlmOnce();
@@ -142,18 +142,18 @@ namespace TabsAgentMod
                 RedirectStandardError = true,
             };
             startInfo.EnvironmentVariables["TABS_AGENT_IO_DIR"] = _config.IoDirectory;
-            string apiKey = _config.OpenAiApiKey;
+            string apiKey = _config.AnthropicApiKey;
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 apiKey = TryReadApiKeyFromEnvFile(_config.BridgeScriptPath);
             }
             if (!string.IsNullOrWhiteSpace(apiKey))
             {
-                startInfo.EnvironmentVariables["OPENAI_API_KEY"] = apiKey;
+                startInfo.EnvironmentVariables["ANTHROPIC_API_KEY"] = apiKey;
             }
             else
             {
-                LogApiKeyWarningOnce("OpenAI API key not set. Add OpenAiApiKey in config or create a .env file next to run_llm_file_bridge.py with OPENAI_API_KEY=...");
+                LogApiKeyWarningOnce("Anthropic API key not set. Add AnthropicApiKey in config or create a .env file next to run_llm_file_bridge.py with ANTHROPIC_API_KEY=...");
             }
 
             try
@@ -254,7 +254,7 @@ namespace TabsAgentMod
                         continue;
                     }
                     string key = line.Substring(0, idx).Trim();
-                    if (!string.Equals(key, "OPENAI_API_KEY", StringComparison.Ordinal))
+                    if (!string.Equals(key, "ANTHROPIC_API_KEY", StringComparison.Ordinal))
                     {
                         continue;
                     }

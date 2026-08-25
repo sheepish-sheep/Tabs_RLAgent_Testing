@@ -21,7 +21,6 @@ namespace TabsAgentMod
             _statePath = Path.Combine(_ioDirectory, "state.json");
             _planPath = Path.Combine(_ioDirectory, "plan.json");
             _logger = logger;
-            // TODO: Create the directory if it does not exist.
             if (!Directory.Exists(_ioDirectory))
             {
                 Directory.CreateDirectory(_ioDirectory);
@@ -31,7 +30,7 @@ namespace TabsAgentMod
 
         public void WriteState(StatePayload state)
         {
-            // TODO: Serialize state to JSON and write to _statePath.
+
             var serializer = new DataContractJsonSerializer(typeof(StatePayload));
             using (var stream = new FileStream(_statePath, FileMode.Create, FileAccess.Write, FileShare.Read))
             {
