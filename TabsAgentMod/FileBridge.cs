@@ -12,14 +12,20 @@ namespace TabsAgentMod
         private readonly string _ioDirectory;
         private readonly string _statePath;
         private readonly string _planPath;
+        private readonly string _resetPath;
+        private readonly string _startBattlePath;
         private readonly ManualLogSource _logger;
         private DateTime _lastPlanWriteUtc = DateTime.MinValue;
+        private DateTime _lastResetWriteUtc = DateTime.MinValue;
+        private DateTime _lastStartBattleWriteUtc = DateTime.MinValue;
 
         public FileBridge(string ioDirectory, ManualLogSource logger)
         {
             _ioDirectory = ioDirectory;
             _statePath = Path.Combine(_ioDirectory, "state.json");
             _planPath = Path.Combine(_ioDirectory, "plan.json");
+            _resetPath = Path.Combine(_ioDirectory, "reset.json");
+            _startBattlePath = Path.Combine(_ioDirectory, "start_battle.json");
             _logger = logger;
             if (!Directory.Exists(_ioDirectory))
             {
@@ -75,6 +81,41 @@ namespace TabsAgentMod
                 _logger.LogError($"Failed to read plan.json: {ex.Message}");
                 return null;
             }
+        }
+
+        public bool TryConsumeResetRequest()
+        {
+            if (!File.Exists(_resetPath))
+            {
+                return false;
+            }
+
+            DateTime lastWriteTime = File.GetLastWriteTimeUtc(_resetPath);
+            if (lastWriteTime <= _lastResetWriteUtc)
+            {
+                return false;
+            }
+
+            _lastResetWriteUtc = lastWriteTime;
+            return true;
+        }
+
+        public bool TryConsumeStartBattleRequest()
+        {
+            // Same mtime-dedup shape as TryConsumeResetRequest.
+            if (!File.Exists(_startBattlePath))
+            {
+                return false;
+            }
+
+            DateTime lastWriteTime = File.GetLastWriteTimeUtc(_startBattlePath);
+            if (lastWriteTime <= _lastStartBattleWriteUtc)
+            {
+                return false;
+            }
+
+            _lastStartBattleWriteUtc = lastWriteTime;
+            return true;
         }
     }
 }

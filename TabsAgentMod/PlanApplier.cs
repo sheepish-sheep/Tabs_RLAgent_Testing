@@ -8,6 +8,7 @@ using Landfall.TABS.GameMode;
 using Landfall.TABS.GameState;
 using Landfall.TABS.Services;
 using Landfall.TABS.UnitPlacement;
+using Landfall.TABS.Workshop;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -48,12 +49,6 @@ namespace TabsAgentMod
             Apply(plan, anchorPos, anchorRotation, anchorSource);
         }
 
-        // Applies a plan using an already-resolved anchor instead of resolving one fresh here. Callers
-        // that trigger an async LLM call (pressing P) should resolve the anchor at press-time via
-        // TryResolveAnchor and pass it through once the plan comes back, rather than letting it get
-        // re-resolved later: the LLM call can take several seconds, during which the cursor (the primary
-        // anchor source) can easily have moved — silently losing the placement, or anchoring it somewhere
-        // the player never intended, if it's resolved fresh at apply-time instead.
         public void Apply(PlanPayload plan, Vector3 anchorPos, Quaternion anchorRotation, string anchorSource)
         {
             BaseGameMode gameMode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
@@ -82,10 +77,6 @@ namespace TabsAgentMod
                 new Vector3(anchorPos.x - localHalfX, anchorPos.y - localHalfY, anchorPos.z - localHalfZ),
                 new Vector3(anchorPos.x + localHalfX, anchorPos.y + localHalfY, anchorPos.z + localHalfZ));
 
-            // Battlefields aren't always aligned to world X/Z on every map — express placement coordinates
-            // relative to the anchor's actual facing (which SceneSettings/the unit's own rotation already
-            // gets correct per map) instead of assuming world Z is always "toward the enemy." Project
-            // redBounds' corners onto the anchor's right/forward axes to get the extents in that local frame.
             Vector3 rightDir = anchorRotation * Vector3.right;
             Vector3 forwardDir = anchorRotation * Vector3.forward;
             float minRight = float.MaxValue, maxRight = float.MinValue;
@@ -168,11 +159,6 @@ namespace TabsAgentMod
                         }
                     }
 
-                    // Map normalized coords into world space (or use world coords if out of [0,1]).
-                    // X/Y are lerped in the anchor's local right/forward frame (not raw world X/Z) so
-                    // "higher y = front line" means toward the enemy on every map, regardless of how
-                    // that map's battlefield happens to be rotated in world space. The final clamp below
-                    // still guarantees the result stays inside redBounds.
                     bool useWorldCoords = placement.X < 0f || placement.X > 1f || placement.Y < 0f || placement.Y > 1f;
                     float worldX, worldZ;
                     if (useWorldCoords)
@@ -223,9 +209,6 @@ namespace TabsAgentMod
                     
                     if (!useWorldCoords)
                     {
-                        // Final safety net: clamp into redBounds regardless of which fallback path
-                        // produced worldPos (e.g. the anchor-position fallback above can sit outside
-                        // redBounds when FindRedAnchorUnit had to return an out-of-bounds fallback unit).
                         float clampedX = Mathf.Clamp(worldPos.x, redBounds.min.x, redBounds.max.x);
                         float clampedZ = Mathf.Clamp(worldPos.z, redBounds.min.z, redBounds.max.z);
                         if (clampedX != worldPos.x || clampedZ != worldPos.z)
@@ -264,12 +247,6 @@ namespace TabsAgentMod
 
         }
 
-        // Resolves an anchor position/rotation to build placement bounds around: prefer wherever the
-        // player's cursor currently is (the same raycast — mask + camera ray — the placement cursor
-        // itself uses, so it's always real, on-map ground), falling back to a placed RED unit if the
-        // cursor isn't currently over valid RED territory. Callers that trigger an async LLM call should
-        // call this once up front and reuse the result (see the Apply overload above) rather than calling
-        // it again later, since the cursor position can change during the async gap.
         internal static bool TryResolveAnchor(out Vector3 anchorPos, out Quaternion anchorRotation, out string anchorSource)
         {
             BaseGameMode gameMode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
@@ -295,9 +272,104 @@ namespace TabsAgentMod
                 return true;
             }
 
+            if (TryResolveTeamLineAnchor(out Vector3 teamLineAnchorPos, out Quaternion teamLineAnchorRotation))
+            {
+                anchorPos = teamLineAnchorPos;
+                anchorRotation = teamLineAnchorRotation;
+                anchorSource = "teamline";
+                return true;
+            }
+            if (TryResolveGridAnchor(out Vector3 gridAnchorPos, out Quaternion gridAnchorRotation))
+            {
+                anchorPos = gridAnchorPos;
+                anchorRotation = gridAnchorRotation;
+                anchorSource = "grid";
+                return true;
+            }
+
             anchorPos = default(Vector3);
             anchorRotation = Quaternion.identity;
             anchorSource = null;
+            return false;
+        }
+
+        private static bool TryResolveGridAnchor(out Vector3 anchorPos, out Quaternion anchorRotation)
+        {
+            const float halfExtent = 80f;
+            const int steps = 11;
+
+            for (int ix = 0; ix < steps; ix++)
+            {
+                float x = Mathf.Lerp(-halfExtent, halfExtent, ix / (float)(steps - 1));
+                for (int iz = 0; iz < steps; iz++)
+                {
+                    float z = Mathf.Lerp(-halfExtent, halfExtent, iz / (float)(steps - 1));
+                    Bounds probeBounds = new Bounds(new Vector3(x, 0f, z), new Vector3(1f, 200f, 1f));
+                    if (!TryGetGroundY(x, z, probeBounds, out float groundY))
+                    {
+                        continue;
+                    }
+
+                    Vector3 candidate = new Vector3(x, groundY, z);
+                    SceneSettings.TeamRequestReslut result = SceneSettings.GetTeamTerritory(candidate, out Quaternion candidateRotation);
+                    if (result.CanPlace && result.Team == Team.Red)
+                    {
+                        Debug.Log($"[GridAnchor] found RED at {candidate} (ix={ix} iz={iz})");
+                        anchorPos = candidate;
+                        anchorRotation = candidateRotation;
+                        return true;
+                    }
+                }
+            }
+
+            Debug.Log($"[GridAnchor] no RED point found in {steps}x{steps} grid over +/-{halfExtent}.");
+            anchorPos = default(Vector3);
+            anchorRotation = Quaternion.identity;
+            return false;
+        }
+        private static bool TryResolveTeamLineAnchor(out Vector3 anchorPos, out Quaternion anchorRotation)
+        {
+            TABSSceneSettings serialized = SceneSettings.SerializedSettings;
+            if (serialized == null)
+            {
+                Debug.Log("[TeamLineAnchor] SceneSettings.SerializedSettings is null.");
+                anchorPos = default(Vector3);
+                anchorRotation = Quaternion.identity;
+                return false;
+            }
+
+            Vector3 center = new Vector3(serialized.TeamLineCenterX, serialized.TeamLineCenterY, serialized.TeamLineCenterZ);
+            Quaternion lineRotation = Quaternion.Euler(0f, serialized.TeamLineRotation, 0f);
+            const float probeDistance = 15f;
+            Debug.Log($"[TeamLineAnchor] center={center} rotation={serialized.TeamLineRotation} type={serialized.TeamLineType} radius={serialized.TeamLineRadius} swap={serialized.TeamSwap}");
+
+            for (int i = 0; i < 2; i++)
+            {
+                float sign = i == 0 ? 1f : -1f;
+                Vector3 offset = lineRotation * Vector3.forward * (probeDistance * sign);
+                float x = center.x + offset.x;
+                float z = center.z + offset.z;
+
+                Bounds probeBounds = new Bounds(new Vector3(x, center.y, z), new Vector3(1f, 100f, 1f));
+                if (!TryGetGroundY(x, z, probeBounds, out float groundY))
+                {
+                    Debug.Log($"[TeamLineAnchor] probe {i} at x={x} z={z}: no ground hit.");
+                    continue;
+                }
+
+                Vector3 candidate = new Vector3(x, groundY, z);
+                SceneSettings.TeamRequestReslut result = SceneSettings.GetTeamTerritory(candidate, out Quaternion candidateRotation);
+                Debug.Log($"[TeamLineAnchor] probe {i} candidate={candidate} CanPlace={result.CanPlace} Team={result.Team}");
+                if (result.CanPlace && result.Team == Team.Red)
+                {
+                    anchorPos = candidate;
+                    anchorRotation = candidateRotation;
+                    return true;
+                }
+            }
+
+            anchorPos = default(Vector3);
+            anchorRotation = Quaternion.identity;
             return false;
         }
 

@@ -6,18 +6,27 @@ namespace TabsAgentMod
     {
         public string Name;
         public int Count;
-
+        public float X;
+        public float Y;
     }
 
     public class StatePayload
     {
-        public  string StateId;
+        public string StateId;
         public int Budget;
-        public  string Phase;
+        public string Phase;
         public List<UnitCount> EnemyUnits;
         public List<UnitCount> YourUnits;
         public bool Campaign;
         public int CampaignBattleBudget;
+        public bool MatchOver;
+        public string Winner;
+        public int WinningTeamUnitsRemaining;
+        public int YourUnitsRemaining;
+        public int EnemyUnitsRemaining;
+        public List<UnitCount> SurvivingEnemyUnits;
+        public int EnemyStartingCost;
+        public int EnemyUnitsRemainingCost;
     }
 
     public class Placement

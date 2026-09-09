@@ -16,6 +16,7 @@ namespace TabsAgentMod
     public interface IGameStateCollector
     {
         bool TryCollect(out StatePayload state);
+        void ResetOutcomeLatch();
     }
 
     public class GameStateCollector : IGameStateCollector
@@ -23,6 +24,28 @@ namespace TabsAgentMod
         private readonly ManualLogSource _logger;
         private readonly ModConfig _config;
         private bool _loggedMissing;
+
+
+        private bool _hasBeenInBattle;
+        private bool _latchedMatchOver;
+        private string _latchedWinner;
+        private int _latchedWinningTeamUnitsRemaining;
+        private int _latchedYourUnitsRemaining;
+        private int _latchedEnemyUnitsRemaining;
+        private List<UnitCount> _latchedSurvivingEnemyUnits;
+        private int _latchedEnemyUnitsRemainingCost;
+
+        public void ResetOutcomeLatch()
+        {
+            _hasBeenInBattle = false;
+            _latchedMatchOver = false;
+            _latchedWinner = null;
+            _latchedWinningTeamUnitsRemaining = 0;
+            _latchedYourUnitsRemaining = 0;
+            _latchedEnemyUnitsRemaining = 0;
+            _latchedSurvivingEnemyUnits = null;
+            _latchedEnemyUnitsRemainingCost = 0;
+        }
 
         public GameStateCollector(ManualLogSource logger, ModConfig config)
         {
@@ -67,7 +90,8 @@ namespace TabsAgentMod
             if (mode.TeamLayouts != null)
             {
                 layoutYour = CountLayoutUnits(mode.TeamLayouts, Team.Red);
-                layoutEnemy = CountLayoutUnits(mode.TeamLayouts, GetEnemyTeam());
+                layoutEnemy = CollectEnemyUnitsWithPosition(mode.TeamLayouts, GetEnemyTeam());
+                state.EnemyStartingCost = SumLayoutBlueprintCost(mode.TeamLayouts, GetEnemyTeam());
             }
 
             if (state.Phase == "setup")
@@ -75,7 +99,7 @@ namespace TabsAgentMod
                 state.YourUnits = layoutYour ?? new List<UnitCount>();
                 state.EnemyUnits = layoutEnemy ?? new List<UnitCount>();
             }
-            else
+            else if (state.Phase == "unknown")
             {
                 if ((layoutYour != null && layoutYour.Count > 0) || (layoutEnemy != null && layoutEnemy.Count > 0))
                 {
@@ -138,7 +162,71 @@ namespace TabsAgentMod
                 state.Budget = remainingBudget > 0 ? remainingBudget : 0;
             }
 
+            if (state.Phase == "battle")
+            {
+                _hasBeenInBattle = true;
+            }
+            if (_hasBeenInBattle && !_latchedMatchOver && mode.MatchOver)
+            {
+                _latchedMatchOver = true;
+                _latchedWinner = mode.CachedCurrentWinner.ToString();
+                TeamSystem teamSystem = World.Active.GetExistingManager<TeamSystem>();
+                _latchedWinningTeamUnitsRemaining = teamSystem.GetWinConditionTeamUnits(mode.CachedCurrentWinner).Count;
+                _latchedYourUnitsRemaining = teamSystem.GetWinConditionTeamUnits(Team.Red).Count;
+                List<Unit> survivingEnemies = teamSystem.GetWinConditionTeamUnits(GetEnemyTeam());
+                _latchedEnemyUnitsRemaining = survivingEnemies.Count;
+                _latchedSurvivingEnemyUnits = CountUnitsByBlueprint(survivingEnemies);
+                _latchedEnemyUnitsRemainingCost = SumUnitBlueprintCost(survivingEnemies);
+            }
+            state.MatchOver = _latchedMatchOver;
+            state.Winner = _latchedWinner;
+            state.WinningTeamUnitsRemaining = _latchedWinningTeamUnitsRemaining;
+            state.YourUnitsRemaining = _latchedYourUnitsRemaining;
+            state.EnemyUnitsRemaining = _latchedEnemyUnitsRemaining;
+            state.SurvivingEnemyUnits = _latchedSurvivingEnemyUnits ?? new List<UnitCount>();
+            state.EnemyUnitsRemainingCost = _latchedEnemyUnitsRemainingCost;
+
             return true;
+        }
+
+        private static int SumLayoutBlueprintCost(TeamLayouts layouts, Team team)
+        {
+            if (layouts == null)
+            {
+                return 0;
+            }
+            var layout = layouts.GetTeamLayout(team);
+            if (layout == null || layout.Count == 0)
+            {
+                return 0;
+            }
+            int total = 0;
+            for (int i = 0; i < layout.Count; i++)
+            {
+                UnitBlueprint unitBlueprint = GetBlueprintFromLayoutUnit(layout[i]) as UnitBlueprint;
+                if (unitBlueprint != null)
+                {
+                    total += (int)unitBlueprint.GetUnitCost();
+                }
+            }
+            return total;
+        }
+
+        private static int SumUnitBlueprintCost(List<Unit> units)
+        {
+            if (units == null || units.Count == 0)
+            {
+                return 0;
+            }
+            int total = 0;
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (units[i] != null && units[i].unitBlueprint != null)
+                {
+                    total += (int)units[i].unitBlueprint.GetUnitCost();
+                }
+            }
+            return total;
         }
 
         private static List<UnitCount> CountLayoutUnits(TeamLayouts layouts, Team team)
@@ -163,6 +251,52 @@ namespace TabsAgentMod
 
             return ToUnitCounts(counts);
         }
+
+        // Named survivor counts from a live TeamSystem unit list (post-battle), as opposed
+        // to CountLayoutUnits which reads the pre-battle placement plan.
+        private static List<UnitCount> CountUnitsByBlueprint(List<Unit> units)
+        {
+            if (units == null || units.Count == 0)
+            {
+                return new List<UnitCount>();
+            }
+
+            Dictionary<string, int> counts = new Dictionary<string, int>(units.Count, StringComparer.Ordinal);
+            for (int i = 0; i < units.Count; i++)
+            {
+                AddUnitCount(counts, units[i] != null ? units[i].unitBlueprint : null);
+            }
+
+            return ToUnitCounts(counts);
+        }
+
+        private static List<UnitCount> CollectEnemyUnitsWithPosition(TeamLayouts layouts, Team team) {
+            if (layouts == null) {
+                return new List<UnitCount>();
+            }
+
+            var layout = layouts.GetTeamLayout(team);
+            if (layout == null || layout.Count == 0) {
+                return new List<UnitCount>();
+            }
+
+            List<UnitCount> results = new List<UnitCount>(layout.Count);
+            for (int i = 0; i < layout.Count; i++) {
+                object blueprint = GetBlueprintFromLayoutUnit(layout[i]);
+                LayoutUnitAccessor accessor = GetLayoutUnitAccessor(layout[i].GetType());
+                float x = 0;
+                float y = 0;
+                if (TryGetLayoutUnitPosition(layout[i], accessor, out x, out y)) {
+                    results.Add(new UnitCount {Name = GetUnitName(blueprint),Count = 1,X = x,Y = y});
+                } else {
+                    results.Add(new UnitCount {Name = GetUnitName(blueprint), Count = 1});
+                }
+
+            }
+
+            return results;
+        }
+
 
 
         private static void AddUnitCount(Dictionary<string, int> counts, object blueprint)
@@ -237,6 +371,14 @@ namespace TabsAgentMod
             "m_Unit",
         };
 
+        private static readonly string[] LayoutUnitPositionMemberNames =
+        {
+            "position",
+            "Position",
+            "m_position",
+            "m_Position",
+        };
+
         // Cache reflection lookups per layout type for speed.
         private static readonly object LayoutUnitAccessorLock = new object();
         private static readonly Dictionary<Type, LayoutUnitAccessor> LayoutUnitAccessors =
@@ -268,6 +410,26 @@ namespace TabsAgentMod
             return GetMemberValue(unit, accessor.NestedBlueprintField, accessor.NestedBlueprintProperty);
         }
 
+        private static bool TryGetLayoutUnitPosition(object layoutUnit, LayoutUnitAccessor accessor, out float x, out float y)
+        {
+            object raw = GetMemberValue(layoutUnit, accessor.PositionField, accessor.PositionProperty);
+            if (raw == null)
+            {
+                object unit = GetMemberValue(layoutUnit, accessor.UnitField, accessor.UnitProperty);
+                raw = GetMemberValue(unit, accessor.NestedPositionField, accessor.NestedPositionProperty);
+            }
+
+            if (raw is Vector3 vector3) {
+                x = vector3.x;
+                y = vector3.z;
+                return true;
+            } else {
+                x = 0;
+                y = 0;
+                return false;
+            }
+        }
+
         // Get or create the cached reflection accessor for the layout type.
         private static LayoutUnitAccessor GetLayoutUnitAccessor(Type type)
         {
@@ -289,6 +451,9 @@ namespace TabsAgentMod
         private static LayoutUnitAccessor CreateLayoutUnitAccessor(Type type)
         {
             LayoutUnitAccessor accessor = new LayoutUnitAccessor();
+            accessor.PositionField = FindField(type, LayoutUnitPositionMemberNames);
+            accessor.PositionProperty = FindProperty(type, LayoutUnitPositionMemberNames);
+
             accessor.BlueprintField = FindField(type, LayoutUnitBlueprintMemberNames);
             accessor.BlueprintProperty = FindProperty(type, LayoutUnitBlueprintMemberNames);
             if (accessor.BlueprintField != null || accessor.BlueprintProperty != null)
@@ -311,6 +476,11 @@ namespace TabsAgentMod
 
             accessor.NestedBlueprintField = FindField(unitType, LayoutUnitBlueprintMemberNames);
             accessor.NestedBlueprintProperty = FindProperty(unitType, LayoutUnitBlueprintMemberNames);
+            if (accessor.PositionField == null && accessor.PositionProperty == null)
+            {
+                accessor.NestedPositionField = FindField(unitType, LayoutUnitPositionMemberNames);
+                accessor.NestedPositionProperty = FindProperty(unitType, LayoutUnitPositionMemberNames);
+            }
             return accessor;
         }
 
@@ -394,6 +564,10 @@ namespace TabsAgentMod
             public PropertyInfo UnitProperty;
             public FieldInfo NestedBlueprintField;
             public PropertyInfo NestedBlueprintProperty;
+            public FieldInfo PositionField;
+            public PropertyInfo PositionProperty;
+            public FieldInfo NestedPositionField;
+            public PropertyInfo NestedPositionProperty;
         }
 
         // Log only once to avoid spamming.
@@ -436,6 +610,11 @@ namespace TabsAgentMod
                 YourUnits = new List<UnitCount>(),
             };
             return true;
+        }
+
+        public void ResetOutcomeLatch()
+        {
+            // No latch to reset - MockStateCollector never reports a battle outcome.
         }
     }
 }

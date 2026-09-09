@@ -18,8 +18,11 @@ TabsAgentMod/obj/
 .env
 .DS_Store
 Thumbs.db
+checkpoints/
 BepInEx-*.zip
 ILSpy-*.zip
 UnityExplorer-*.zip
 tools/
 docs/
+# Disposable Phase 1 scratch script, not part of the real system
+random_policy_test.py

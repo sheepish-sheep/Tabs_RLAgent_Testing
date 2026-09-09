@@ -25,8 +25,8 @@ namespace TabsAgentMod
             if (config == null)
             {
                 IoDirectory = defaultIoDirectory;
-                StateWriteIntervalSeconds = 1.0f;
-                PlanPollIntervalSeconds = 1.0f;
+                StateWriteIntervalSeconds = 0.1f;
+                PlanPollIntervalSeconds = 0.1f;
                 UseMockState = false;
                 MockBudget = 1000;
                 PythonExePath = "python";
@@ -38,10 +38,9 @@ namespace TabsAgentMod
                 return;
             }
 
-            // TODO: Bind config values (IO directory, poll intervals, mock mode, etc).
             IoDirectory = config.Bind("General", "IoDirectory", defaultIoDirectory, "Directory for IO files").Value;
-            StateWriteIntervalSeconds = config.Bind("General", "StateWriteIntervalSeconds", 1.0f, "Interval in seconds to write state files").Value;
-            PlanPollIntervalSeconds = config.Bind("General", "PlanPollIntervalSeconds", 1.0f, "Interval in seconds to poll for plans").Value;
+            StateWriteIntervalSeconds = config.Bind("General", "StateWriteIntervalSeconds", 0.1f, "Interval in seconds to write state files").Value;
+            PlanPollIntervalSeconds = config.Bind("General", "PlanPollIntervalSeconds", 0.1f, "Interval in seconds to poll for plans").Value;
             UseMockState = config.Bind("General", "UseMockState", false, "Whether to use mock state data").Value;
             MockBudget = config.Bind("General", "MockBudget", 1000, "Budget for mock state data").Value;
             Campaign = config.Bind("General", "Campaign", false, "Whether to run in campaign mode").Value;

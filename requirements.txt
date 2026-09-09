@@ -2,3 +2,7 @@ langchain
 langchain-core
 langchain-anthropic
 pydantic
+cma
+numpy
+gymnasium
+stable-baselines3

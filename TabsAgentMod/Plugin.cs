@@ -1,7 +1,14 @@
 using BepInEx;
+using Landfall.TABS;
+using Landfall.TABS.GameMode;
+using Landfall.TABS.GameState;
+using Landfall.TABS.Services;
+using Landfall.TABS.UnitPlacement;
+using Landfall.TABS.Workshop;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 
 namespace TabsAgentMod
@@ -24,6 +31,10 @@ namespace TabsAgentMod
         private Vector3 _pendingAnchorPos;
         private Quaternion _pendingAnchorRotation;
         private string _pendingAnchorSource;
+        private bool _hasEpisodeAnchor;
+        private Vector3 _episodeAnchorPos;
+        private Quaternion _episodeAnchorRotation;
+        private string _episodeAnchorSource;
 
         private void Awake()
         {
@@ -45,14 +56,12 @@ namespace TabsAgentMod
 
         private void Update()
         {
+            AutoLoadNextLevelProperty?.SetValue(null, false);
+
             if (Input.GetKeyDown(KeyCode.P))
             {
                 Logger.LogInfo("P pressed: writing state and running LLM bridge.");
                 WriteStateIfReady();
-                // Resolve the anchor now, at press-time, and reuse it once the plan comes back — the LLM
-                // call below is async and can take several seconds, during which the cursor (the primary
-                // anchor source) can easily move; resolving fresh later would silently lose the placement
-                // or anchor it somewhere the player never intended.
                 if (!PlanApplier.TryResolveAnchor(out _pendingAnchorPos, out _pendingAnchorRotation, out _pendingAnchorSource))
                 {
                     Logger.LogError("No valid anchor: point the cursor at RED territory or place a RED unit before running the LLM.");
@@ -66,20 +75,41 @@ namespace TabsAgentMod
                 }
             }
 
-            // Periodically write state.json and poll plan.json on a timer.
-            if (Time.time >= _nextStateWriteTime)
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                WriteStateIfReady();
-                _nextStateWriteTime = Time.time + _config.StateWriteIntervalSeconds;
+                Logger.LogInfo("R pressed: resetting level.");
+                ResetLevel();
             }
 
-            if (Time.time >= _nextPlanPollTime)
+            if (Input.GetKeyDown(KeyCode.B))
             {
+                Logger.LogInfo("B pressed: starting battle.");
+                StartBattle();
+            }
+
+            if (Time.unscaledTime >= _nextStateWriteTime)
+            {
+                WriteStateIfReady();
+                _nextStateWriteTime = Time.unscaledTime + _config.StateWriteIntervalSeconds;
+            }
+
+            if (Time.unscaledTime >= _nextPlanPollTime)
+            {
+                if (_bridge.TryConsumeResetRequest())
+                {
+                    Logger.LogInfo("Reset request received: resetting level.");
+                    ResetLevel();
+                }
+                if (_bridge.TryConsumeStartBattleRequest())
+                {
+                    Logger.LogInfo("Start-battle request received: starting battle.");
+                    StartBattle();
+                }
                 if (_llmProcess == null || _llmProcess.HasExited)
                 {
                     ReadAndApplyPlan();
                 }
-                _nextPlanPollTime = Time.time + _config.PlanPollIntervalSeconds;
+                _nextPlanPollTime = Time.unscaledTime + _config.PlanPollIntervalSeconds;
             }
 
             if (_pendingPlanApply)
@@ -87,6 +117,86 @@ namespace TabsAgentMod
                 _pendingPlanApply = false;
                 ReadAndApplyPlan();
             }
+        }
+
+        private static readonly FieldInfo CampaignModeLastLoadedLevelField =
+            typeof(CampaignGameMode).GetField("m_lastLoadedLevel", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo RestartMatchMethod =
+            typeof(BaseGameMode).GetMethod("RestartMatch", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly PropertyInfo AutoLoadNextLevelProperty =
+            typeof(CampaignPlayerDataHolder).GetProperty("AutoLoadNextLevel", BindingFlags.Public | BindingFlags.Static);
+
+        private void ResetLevel()
+        {
+            _collector.ResetOutcomeLatch();
+            _hasEpisodeAnchor = false;
+
+            BaseGameMode mode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
+            CampaignGameMode campaignMode = mode as CampaignGameMode;
+            if (campaignMode != null)
+            {
+                ResetCampaignLevel(campaignMode);
+                return;
+            }
+
+            if (mode == null || RestartMatchMethod == null)
+            {
+                Logger.LogError("Cannot reset: no active game mode, or RestartMatch() not found.");
+                return;
+            }
+            RestartMatchMethod.Invoke(mode, null);
+        }
+
+        private void ResetCampaignLevel(CampaignGameMode campaignMode)
+        {
+            if (campaignMode.MatchOver)
+            {
+                if (campaignMode.IsMenuOpen())
+                {
+                    return;
+                }
+                if (RestartMatchMethod == null)
+                {
+                    return;
+                }
+                RestartMatchMethod.Invoke(campaignMode, null);
+                campaignMode.OnClearedTeam(Team.Red);
+                return;
+            }
+
+            TABSCampaignLevelAsset level = CampaignHandler.LastLoadedLevel;
+            if (CampaignModeLastLoadedLevelField != null)
+            {
+                TABSCampaignLevelAsset modeLevel = CampaignModeLastLoadedLevelField.GetValue(campaignMode) as TABSCampaignLevelAsset;
+                if (modeLevel != null)
+                {
+                    level = modeLevel;
+                }
+            }
+
+            if (level == null)
+            {
+                Logger.LogError("Cannot reset: no level found on CampaignHandler.LastLoadedLevel or CampaignGameMode.m_lastLoadedLevel.");
+                return;
+            }
+            CampaignHandler.LoadLevel(level, campaign: true);
+        }
+
+        private void StartBattle()
+        {
+            BaseGameMode mode = ServiceLocator.GetService<GameModeService>()?.CurrentGameMode;
+            if (mode != null && mode.DelayedEndGameRoutine != null)
+            {
+                mode.OnWinnerDecided(mode.CachedCurrentWinner, string.Empty);
+                return;
+            }
+            GameStateManager gameStateManager = mode?.GameStateManager;
+            if (gameStateManager == null || gameStateManager.GameState != GameState.PlacementState)
+            {
+                Logger.LogError("Cannot start battle: current game mode is not in PlacementState.");
+                return;
+            }
+            mode.StartGame();
         }
 
         private void WriteStateIfReady()
@@ -117,7 +227,16 @@ namespace TabsAgentMod
             }
             else
             {
-                _applier.Apply(plan);
+                if (!_hasEpisodeAnchor)
+                {
+                    if (!PlanApplier.TryResolveAnchor(out _episodeAnchorPos, out _episodeAnchorRotation, out _episodeAnchorSource))
+                    {
+                        Logger.LogError("No valid anchor: cannot apply plan.");
+                        return;
+                    }
+                    _hasEpisodeAnchor = true;
+                }
+                _applier.Apply(plan, _episodeAnchorPos, _episodeAnchorRotation, _episodeAnchorSource);
             }
             if (!string.IsNullOrWhiteSpace(plan.StateId))
             {
