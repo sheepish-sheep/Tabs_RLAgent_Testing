@@ -3,9 +3,11 @@ already-loaded campaign level via TabsEnv, using pycma.
 """
 
 import cma
+import json
 import numpy as np
 import os
 import pickle
+import uuid
 from pathlib import Path
 from typing import List, Tuple
 
@@ -14,9 +16,37 @@ from core.unit_catalog import load_unit_catalog
 
 MAX_UNITS = 25
 GENES_PER_UNIT = 3    # [unit_type_gene, x_gene, y_gene]
-NUM_REEVALUATIONS = 3  
-POPULATION_REEVALUATIONS = 2 
-CHECKPOINT_PATH = Path("checkpoints/ga_latest.pkl")  
+NUM_REEVALUATIONS = 3
+POPULATION_REEVALUATIONS = 1
+POPSIZE = 64
+SIGMA0 = 1.0
+POSITION_SPAN = 8.0
+ENCODING_VERSION = 4
+CHECKPOINT_PATH = Path("checkpoints/ga_latest.pkl")
+BEST_ARMY_PLAN_PATH = Path("checkpoints/best_army_plan.json")
+BEST_ARMY_META_PATH = Path("checkpoints/best_army_meta.json")
+_last_budget = None
+
+# These 10 units are real (confirmed via ILSpy decompile: they have real voice-line assets on
+# disk, and are referenced by name in the catalog), but their guids are simply not present in
+# this game installation's loaded unit blueprint database (DM.LandfallContentDatabase --
+# confirmed via reflection: 186 total guid entries, 0 resolved to null, so it's not an asset
+# load failure, the guids just aren't in the list at all). The mod can never place them --
+# TabsAgentMod\PlanApplier.cs logs "UnitBlueprint not found for placement" every time the
+# search happens to pick one. Filtering them out of the gene space here means the search can
+# no longer waste a slot on a unit that's guaranteed to be silently dropped.
+UNRESOLVABLE_UNITS = frozenset({
+    "Celestial Aegis",
+    "Chronomancer",
+    "Death Bringer",
+    "Divine Arbiter",
+    "Exiled Sentinel",
+    "Righteous Paladin",
+    "Shadow Walker",
+    "Tempest Lich",
+    "Void Cultist",
+    "Void Monarch",
+})
 
 
 # Decode a vector into a list of placements of units on the map
@@ -28,8 +58,8 @@ def decode_individual(vector, unit_names: List[str], unit_catalog, budget: float
         x_gene = vector[i * GENES_PER_UNIT + 1]
         y_gene = vector[i * GENES_PER_UNIT + 2]
         name = unit_names[int(unit_type_gene) % len(unit_names)]
-        x = 1.0 / (1.0 + np.exp(-x_gene))
-        y = 1.0 / (1.0 + np.exp(-y_gene))
+        x = float(np.clip(0.5 + x_gene / POSITION_SPAN, 0.0, 1.0))
+        y = float(np.clip(0.5 + y_gene / POSITION_SPAN, 0.0, 1.0))
         cost = unit_catalog[name].cost
         if cost_so_far + cost > budget:
             continue
@@ -39,9 +69,11 @@ def decode_individual(vector, unit_names: List[str], unit_catalog, budget: float
 
 # How well an army performs in a single evaluation
 def evaluate(vector, env: TabsEnv, unit_names: List[str], unit_catalog, stage) -> float:
+    global _last_budget
     try:
         state = env.reset(stage)
         budget = state["Budget"]
+        _last_budget = budget
         placements = decode_individual(vector, unit_names, unit_catalog, budget)
         state, reward, done, info = env.place_army(placements)
         if done:
@@ -50,7 +82,7 @@ def evaluate(vector, env: TabsEnv, unit_names: List[str], unit_catalog, stage) -
         return -reward
     except TimeoutError:
         print("evaluate() timed out - treating as a loss.", flush=True)
-        return 1.0
+        return 0.0
 
 #tabs is not deterministic, so we need to evaluate the same vector multiple times to smooth out the noise
 def evaluate_averaged(vector, env: TabsEnv, unit_names: List[str], unit_catalog, stage, num_trials: int = NUM_REEVALUATIONS) -> float:
@@ -60,25 +92,144 @@ def evaluate_averaged(vector, env: TabsEnv, unit_names: List[str], unit_catalog,
         mean += cost
     return mean / num_trials
 
+# A saved army's X/Y are fractions (0..1) of the mod's deployment box, so where a unit really
+# lands depends on the mod's placement settings, and those live in ONE global BepInEx config
+# file shared by every level. Recording them next to the army makes each checkpoint say how it
+# has to be replayed. Override the path with TABS_MOD_CONFIG_PATH if the game is installed
+# somewhere else.
+MOD_CONFIG_PATH = Path(os.environ.get(
+    "TABS_MOD_CONFIG_PATH",
+    r"C:\Program Files (x86)\Steam\steamapps\common\Totally Accurate Battle Simulator"
+    r"\BepInEx\config\com.tabsagent.mod.cfg",
+))
+PLACEMENT_CONFIG_KEYS = {
+    "AutoAnchorBackOffset": float,
+    "DeploymentBoxHalfExtentX": float,
+    "DeploymentBoxHalfExtentZ": float,
+    "IgnoreCursorForAutoAnchor": lambda text: text.strip().lower() == "true",
+}
+
+
+def read_placement_config() -> dict:
+    """Read the placement settings from the mod's config FILE.
+
+    Caveat: this is what the file says now, not necessarily what the running game loaded --
+    the mod reads its config once at launch, so editing the file mid-run changes what gets
+    recorded here without changing how units are placed. Any value that can't be read is
+    saved as null rather than failing, because this runs inside the training loop and must
+    never be the thing that kills a run.
+    """
+    config = {key: None for key in PLACEMENT_CONFIG_KEYS}
+    try:
+        text = MOD_CONFIG_PATH.read_text(encoding="utf-8-sig")
+    except OSError as exc:
+        print(f"Could not read mod config ({exc}); placement_config will be null in the saved meta.", flush=True)
+        return {"source": str(MOD_CONFIG_PATH), **config}
+
+    for line in text.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or line.startswith("["):
+            continue
+        key, separator, value = line.partition("=")
+        key = key.strip()
+        if separator and key in PLACEMENT_CONFIG_KEYS:
+            try:
+                config[key] = PLACEMENT_CONFIG_KEYS[key](value)
+            except ValueError:
+                pass
+    return {"source": str(MOD_CONFIG_PATH), **config}
+
+
+def save_best_army(vector, cost: float, generation: int, unit_names: List[str], unit_catalog, budget) -> None:
+    if budget is None:
+        return
+    placements = decode_individual(vector, unit_names, unit_catalog, budget)
+    BEST_ARMY_PLAN_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(BEST_ARMY_PLAN_PATH, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "StateId": str(uuid.uuid4()),
+                "Placements": [
+                    {"Name": name, "X": float(x), "Y": float(y)} for name, x, y in placements
+                ],
+            },
+            f,
+            indent=2,
+        )
+    with open(BEST_ARMY_META_PATH, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "averaged_cost": float(cost),
+                "reeval_battles": NUM_REEVALUATIONS,
+                "generation": generation,
+                "encoding_version": ENCODING_VERSION,
+                "budget": budget,
+                "unit_count": len(placements),
+                "cost_spent": sum(unit_catalog[name].cost for name, _, _ in placements),
+                "units": sorted({name for name, _, _ in placements}),
+                "placement_config": read_placement_config(),
+                "genes": [float(g) for g in vector],
+            },
+            f,
+            indent=2,
+        )
+
+
 def main():
     io_dir = Path(os.environ["LOCALAPPDATA"]) / "TabsAgentModIO"
     env = TabsEnv(io_dir)
     unit_catalog = load_unit_catalog(Path("data/units_dummy.json"))
-    unit_names = list(unit_catalog.keys())
+    unit_names = [name for name in unit_catalog.keys() if name not in UNRESOLVABLE_UNITS]
     stage = None
+    num_genes = MAX_UNITS * GENES_PER_UNIT
+    half_span = POSITION_SPAN / 2.0
+    lower = np.empty(num_genes)
+    upper = np.empty(num_genes)
+    lower[0::GENES_PER_UNIT] = 0.0
+    upper[0::GENES_PER_UNIT] = len(unit_names) - 1e-9
+    lower[1::GENES_PER_UNIT] = -half_span
+    upper[1::GENES_PER_UNIT] = half_span
+    lower[2::GENES_PER_UNIT] = -half_span
+    upper[2::GENES_PER_UNIT] = half_span
+    stds = np.empty(num_genes)
+    stds[0::GENES_PER_UNIT] = len(unit_names) / 4.0
+    stds[1::GENES_PER_UNIT] = POSITION_SPAN / 4.0
+    stds[2::GENES_PER_UNIT] = POSITION_SPAN / 4.0
 
+    cma_opts = {
+        "CMA_stds": stds,
+        "popsize": POPSIZE,
+        "CMA_diagonal_decoding": 1,
+        "bounds": [lower.tolist(), upper.tolist()],
+    }
+
+    checkpoint = None
     if CHECKPOINT_PATH.exists():
         with open(CHECKPOINT_PATH, "rb") as f:
             checkpoint = pickle.load(f)
+
+    best_ever_cost = float("inf")
+    best_ever_vector = None
+
+    if checkpoint is not None and checkpoint.get("encoding_version") == ENCODING_VERSION:
         es = checkpoint["es"]
         generations = checkpoint["generations"]
+        best_ever_cost = checkpoint.get("best_ever_cost", float("inf"))
+        best_ever_vector = checkpoint.get("best_ever_vector")
         print(f"Resumed from checkpoint at generation {generations}.", flush=True)
+        if best_ever_vector is not None:
+            print(f"Best army so far has averaged cost {best_ever_cost:.2f}.", flush=True)
     else:
-        x0 = np.zeros(MAX_UNITS * GENES_PER_UNIT)
-        sigma0 = 3.0
-        stds = np.ones(MAX_UNITS * GENES_PER_UNIT)
-        stds[0::GENES_PER_UNIT] = len(unit_names) / (2 * sigma0)
-        es = cma.CMAEvolutionStrategy(x0, sigma0, {"CMA_stds": stds})
+        if checkpoint is not None:
+            stale = checkpoint.get("encoding_version", 1)
+            print(
+                f"Checkpoint uses encoding v{stale}, current is v{ENCODING_VERSION}. "
+                "Its genes are on the old scale and cannot be reused, so starting fresh.",
+                flush=True,
+            )
+        x0 = np.zeros(num_genes)
+        x0[0::GENES_PER_UNIT] = len(unit_names) / 2.0
+        es = cma.CMAEvolutionStrategy(x0, SIGMA0, cma_opts)
         generations = 0
 
     while not es.stop():
@@ -94,9 +245,31 @@ def main():
         best_cost_avg = evaluate_averaged(solutions[best_index], env, unit_names, unit_catalog, stage)
         print(f"Generation {generations}: averaged best cost = {best_cost_avg:.2f}", flush=True)
 
+        # Compare on the reevaluated score, not the population score: the latter
+        # is the one that got lucky, which is why it does not reproduce.
+        if best_cost_avg < best_ever_cost:
+            best_ever_cost = best_cost_avg
+            best_ever_vector = np.array(solutions[best_index])
+            save_best_army(
+                best_ever_vector, best_ever_cost, generations, unit_names, unit_catalog, _last_budget
+            )
+            print(
+                f"New best army (averaged cost {best_ever_cost:.2f}) saved to {BEST_ARMY_PLAN_PATH}.",
+                flush=True,
+            )
+
         CHECKPOINT_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(CHECKPOINT_PATH, "wb") as f:
-            pickle.dump({"es": es, "generations": generations}, f)
+            pickle.dump(
+                {
+                    "es": es,
+                    "generations": generations,
+                    "encoding_version": ENCODING_VERSION,
+                    "best_ever_cost": best_ever_cost,
+                    "best_ever_vector": best_ever_vector,
+                },
+                f,
+            )
 
         if best_cost_avg <= -1.0:
             print("Converged: found a consistently winning army.", flush=True)

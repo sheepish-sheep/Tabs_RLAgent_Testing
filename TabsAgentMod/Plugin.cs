@@ -105,6 +105,16 @@ namespace TabsAgentMod
                     Logger.LogInfo("Start-battle request received: starting battle.");
                     StartBattle();
                 }
+                if (_bridge.TryConsumeDumpCostsRequest())
+                {
+                    Logger.LogInfo("Dump-costs request received: writing blueprint costs.");
+                    _applier.DumpBlueprintCosts(Path.Combine(_config.IoDirectory, "blueprint_costs.json"));
+                }
+                if (_bridge.TryConsumeDumpCostsRawRequest())
+                {
+                    Logger.LogInfo("Dump-costs-raw request received: writing undeduped blueprint costs.");
+                    _applier.DumpAllBlueprintCostsRaw(Path.Combine(_config.IoDirectory, "blueprint_costs_raw.json"));
+                }
                 if (_llmProcess == null || _llmProcess.HasExited)
                 {
                     ReadAndApplyPlan();
@@ -223,20 +233,20 @@ namespace TabsAgentMod
             if (_hasPendingAnchor)
             {
                 _hasPendingAnchor = false;
-                _applier.Apply(plan, _pendingAnchorPos, _pendingAnchorRotation, _pendingAnchorSource);
+                _applier.Apply(plan, _pendingAnchorPos, _pendingAnchorRotation, _pendingAnchorSource, _config.DeploymentBoxHalfExtentX, _config.DeploymentBoxHalfExtentZ);
             }
             else
             {
                 if (!_hasEpisodeAnchor)
                 {
-                    if (!PlanApplier.TryResolveAnchor(out _episodeAnchorPos, out _episodeAnchorRotation, out _episodeAnchorSource))
+                    if (!PlanApplier.TryResolveAnchor(out _episodeAnchorPos, out _episodeAnchorRotation, out _episodeAnchorSource, _config.IgnoreCursorForAutoAnchor, _config.AutoAnchorBackOffset))
                     {
                         Logger.LogError("No valid anchor: cannot apply plan.");
                         return;
                     }
                     _hasEpisodeAnchor = true;
                 }
-                _applier.Apply(plan, _episodeAnchorPos, _episodeAnchorRotation, _episodeAnchorSource);
+                _applier.Apply(plan, _episodeAnchorPos, _episodeAnchorRotation, _episodeAnchorSource, _config.DeploymentBoxHalfExtentX, _config.DeploymentBoxHalfExtentZ);
             }
             if (!string.IsNullOrWhiteSpace(plan.StateId))
             {

@@ -1,89 +1,105 @@
 # TABS Agent
 
-An AI-powered army builder for Totally Accurate Battle Simulator. A C# mod reads real game state and places units, while a Python LangChain LLM builds the plan.
+An RL agent that learns army compositions for Totally Accurate Battle Simulator.
+A C# BepInEx mod exposes real game state over a file bridge; Python drives training
+against it with PPO (stable-baselines3) and CMA-ES (pycma).
 
 ## How It Works
 
-1. C# mod writes `state.json` to disk with enemy army info and budget
-2. Python reads it, calls the LLM, writes `plan.json` with unit placements
-3. C# mod polls `plan.json` and spawns units in-game
+The mod and Python talk through JSON files in a shared IO directory:
+
+| File | Written by | Purpose |
+|---|---|---|
+| `state.json` | mod | current game state (enemy army, budget, phase, outcome) |
+| `plan.json` | Python | unit placements to apply |
+| `reset.json` | Python | request a level reset |
+| `start_battle.json` | Python | request battle start |
+
+The mod writes `state.json` and polls `plan.json` on timers, so Python drives an
+episode by writing `reset.json` → `plan.json` → `start_battle.json` and reading the
+resulting `state.json`. This is the `TabsEnv` loop in `core/env.py`.
 
 Default IO directory: `%LOCALAPPDATA%\TabsAgentModIO\`
 
 ## Project Layout
 
 ```
-TabsAgentMod/           C# BepInEx plugin (reads state, applies plan)
-core/                   Python strategy logic
-  strategy_llm.py       LangChain prompt + structured output
+TabsAgentMod/           C# BepInEx plugin (writes state, applies plans)
+core/
+  env.py                TabsEnv — file-bridge episode loop
+  ppo_env.py            Gymnasium wrapper over TabsEnv
+  train_ppo.py          PPO training entry point
+  ga_search.py          CMA-ES search over army compositions
   models.py             Domain models (Unit, Army, GameState)
   unit_catalog.py       Load unit data from JSON
 data/
   units_dummy.json      Unit catalog placeholder
-run_llm_file_bridge.py  Python bridge (state.json -> plan.json)
 ```
 
 ## Prerequisites
 
 1. [BepInEx 5 (x64)](https://github.com/BepInEx/BepInEx/releases)
-2. [Visual Studio 2022](https://visualstudio.microsoft.com/downloads/)
-3. [.NET Framework 4.7.2 Developer Pack](https://dotnet.microsoft.com/download/dotnet-framework/net472)
-4. Python 3.10+
-5. [ILSpy](https://github.com/icsharpcode/ILSpy/releases) (optional, for exploring game assemblies)
+2. Python 3.12
+3. [ILSpy](https://github.com/icsharpcode/ILSpy/releases) (optional, for exploring game assemblies)
 
-## Installation
+Building the C# mod is only needed if you change it. Note that `TabsAgentMod/bin/`
+is gitignored, so a fresh clone has no prebuilt DLL and must build one. To build,
+you need the [.NET SDK](https://dotnet.microsoft.com/download) (`dotnet build`) — full
+Visual Studio is not required. Targeting `net472` without the Developer Pack also needs
+`<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />`
+in the csproj.
+
+## Mod Installation
 
 1. Unzip BepInEx into your TABS folder:
    `C:\Program Files (x86)\Steam\steamapps\common\Totally Accurate Battle Simulator`
 
 2. Run TABS once, then exit (creates the `BepInEx/` folder structure)
 
-3. Open `TabsAgentMod/TabsAgentMod.csproj` in Visual Studio and build
-
-4. Copy `TabsAgentMod.dll` to:
+3. Copy `TabsAgentMod.dll` to:
    `...\Totally Accurate Battle Simulator\BepInEx\plugins\`
 
-5. Run TABS once, then exit (generates `BepInEx/config/com.tabsagent.mod.cfg`)
+4. Run TABS once, then exit (generates `BepInEx/config/com.tabsagent.mod.cfg`)
 
-6. In that config file, under `[LLM]`, set `BridgeScriptPath` to the full path of
-   `run_llm_file_bridge.py` on your machine (and `PythonExePath` too, if `python` isn't
-   on your PATH). This is what lets the mod launch the bridge itself when you press P
-   in-game, instead of you having to run it manually in a terminal.
-
-7. Run TABS and confirm `BepInEx/LogOutput.log` shows `"TabsAgent Mod loaded."`
+5. Run TABS and confirm `BepInEx/LogOutput.log` shows `"TabsAgent Mod loaded."`
 
 ## Python Setup
 
 ```bash
+py -3.12 -m venv .venv
+.venv\Scripts\activate
+
+# torch must come first, from the CUDA 12.8 index — see note below
+pip install torch --index-url https://download.pytorch.org/whl/cu128
 pip install -r requirements.txt
 ```
 
-Set your Anthropic API key in a `.env` file:
-```
-ANTHROPIC_API_KEY=sk-ant-...
-```
+### GPU note
+
+On Blackwell cards (RTX 50-series, `sm_120`) the default PyPI torch wheel fails at
+runtime with *"no kernel image is available for execution on the device"*. Install
+torch from the `cu128` index as shown above.
+
+### Smart App Control note
+
+If Windows Smart App Control is enabled, recent numpy releases can fail to import
+with *"An Application Control policy has blocked this file"* — the wheels are
+unsigned and new versions have no reputation yet. `requirements.txt` pins
+`numpy==2.2.6` for this reason.
 
 ## Usage
 
-The Python bridge watches for `state.json` and generates `plan.json` automatically.
+Training drives the game directly, so TABS must be running with a campaign level
+loaded and in the placement phase.
 
 ```bash
-# Continuous watch mode (default)
-python run_llm_file_bridge.py
-
-# Single run mode
-python run_llm_file_bridge.py --once
-
-# Custom IO directory
-python run_llm_file_bridge.py --io-dir "C:\path\to\io"
+python -m core.train_ppo    # PPO
+python -m core.ga_search    # CMA-ES
 ```
 
-### In-game: pressing P
+### In-game keys
 
-During placement, press **P** to have the mod write `state.json`, run the LLM bridge, and
-apply the resulting plan. Placements are anchored to wherever your mouse cursor is when
-you press P (falling back to an existing placed RED unit if the cursor isn't over RED
-territory) — the mod captures that spot at the moment you press P, not whenever the LLM
-call finishes, since the LLM call is asynchronous and can take several seconds. Point your
-cursor at RED territory (or place a RED unit) *before* pressing P; moving the mouse
-elsewhere afterward while it's thinking won't affect where the plan gets placed.
+- **R** — reset the level
+- **B** — start the battle
+
+Both are also triggerable from Python via `reset.json` / `start_battle.json`.

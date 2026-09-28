@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- No .NET Framework 4.7.2 Developer Pack installed on this machine;
+         this package supplies the reference assemblies net472 needs to build
+         under the .NET SDK/CLI without it. -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>$(TABS_DIR)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>

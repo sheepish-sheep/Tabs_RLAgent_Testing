@@ -1,8 +1,14 @@
-langchain
-langchain-core
-langchain-anthropic
-pydantic
+# PyTorch is required by stable-baselines3 but is NOT listed here on purpose:
+# this machine has an RTX 5060 (Blackwell, sm_120), which needs the CUDA 12.8+
+# build. The default PyPI wheel fails with "no kernel image is available".
+# Install it first, separately:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu128
 cma
-numpy
+# Pinned: Windows Smart App Control is enabled on this machine and blocks
+# unsigned binaries that lack an established reputation. numpy 2.5.3's
+# random/_bounded_integers.pyd gets blocked ("An Application Control policy
+# has blocked this file"). 2.2.6 is old enough to be trusted. Only raise this
+# pin after checking `import numpy.random` still works.
+numpy==2.2.6
 gymnasium
 stable-baselines3

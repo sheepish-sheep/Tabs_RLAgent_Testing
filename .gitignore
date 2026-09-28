@@ -1,3 +1,4 @@
+# Python
 .venv/
 venv/
 __pycache__/
@@ -6,6 +7,8 @@ __pycache__/
 *.pyd
 *.egg-info/
 .pytest_cache/
+
+# .NET / Visual Studio
 .vs/
 *.suo
 *.user
@@ -14,15 +17,28 @@ __pycache__/
 *.csproj.user
 TabsAgentMod/bin/
 TabsAgentMod/obj/
-*.log
+
+# Secrets, local-only settings
 .env
+
+# OS cruft
 .DS_Store
 Thumbs.db
+
+# Logs and scratch output (training.log, decoded copies, etc.)
+*.log
+*.tmp
+
+# Training runs: checkpoints, saved armies, per-level archives - all reproducible, not source
 checkpoints/
+
+# Downloaded tools / decompiled source, not part of the repo's own code
 BepInEx-*.zip
 ILSpy-*.zip
 UnityExplorer-*.zip
 tools/
 docs/
+decompiled/
+
 # Disposable Phase 1 scratch script, not part of the real system
 random_policy_test.py

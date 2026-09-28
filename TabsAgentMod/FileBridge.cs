@@ -14,10 +14,14 @@ namespace TabsAgentMod
         private readonly string _planPath;
         private readonly string _resetPath;
         private readonly string _startBattlePath;
+        private readonly string _dumpCostsPath;
+        private readonly string _dumpCostsRawPath;
         private readonly ManualLogSource _logger;
         private DateTime _lastPlanWriteUtc = DateTime.MinValue;
         private DateTime _lastResetWriteUtc = DateTime.MinValue;
         private DateTime _lastStartBattleWriteUtc = DateTime.MinValue;
+        private DateTime _lastDumpCostsWriteUtc = DateTime.MinValue;
+        private DateTime _lastDumpCostsRawWriteUtc = DateTime.MinValue;
 
         public FileBridge(string ioDirectory, ManualLogSource logger)
         {
@@ -26,6 +30,8 @@ namespace TabsAgentMod
             _planPath = Path.Combine(_ioDirectory, "plan.json");
             _resetPath = Path.Combine(_ioDirectory, "reset.json");
             _startBattlePath = Path.Combine(_ioDirectory, "start_battle.json");
+            _dumpCostsPath = Path.Combine(_ioDirectory, "dump_costs.json");
+            _dumpCostsRawPath = Path.Combine(_ioDirectory, "dump_costs_raw.json");
             _logger = logger;
             if (!Directory.Exists(_ioDirectory))
             {
@@ -115,6 +121,42 @@ namespace TabsAgentMod
             }
 
             _lastStartBattleWriteUtc = lastWriteTime;
+            return true;
+        }
+
+        public bool TryConsumeDumpCostsRequest()
+        {
+            // Same mtime-dedup shape as TryConsumeResetRequest.
+            if (!File.Exists(_dumpCostsPath))
+            {
+                return false;
+            }
+
+            DateTime lastWriteTime = File.GetLastWriteTimeUtc(_dumpCostsPath);
+            if (lastWriteTime <= _lastDumpCostsWriteUtc)
+            {
+                return false;
+            }
+
+            _lastDumpCostsWriteUtc = lastWriteTime;
+            return true;
+        }
+
+        public bool TryConsumeDumpCostsRawRequest()
+        {
+            // Same mtime-dedup shape as TryConsumeResetRequest.
+            if (!File.Exists(_dumpCostsRawPath))
+            {
+                return false;
+            }
+
+            DateTime lastWriteTime = File.GetLastWriteTimeUtc(_dumpCostsRawPath);
+            if (lastWriteTime <= _lastDumpCostsRawWriteUtc)
+            {
+                return false;
+            }
+
+            _lastDumpCostsRawWriteUtc = lastWriteTime;
             return true;
         }
     }
