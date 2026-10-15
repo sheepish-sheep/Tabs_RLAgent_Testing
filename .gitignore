@@ -18,27 +18,24 @@ __pycache__/
 TabsAgentMod/bin/
 TabsAgentMod/obj/
 
-# Secrets, local-only settings
+# Editors and local-only settings
+.vscode/
+.claude/settings.local.json
 .env
 
 # OS cruft
 .DS_Store
 Thumbs.db
 
-# Logs and scratch output (training.log, decoded copies, etc.)
+# Logs and scratch output (training.log etc.)
 *.log
 *.tmp
 
-# Training runs: checkpoints, saved armies, per-level archives - all reproducible, not source
+# Training output: checkpoints, saved armies, level archives, PPO models (ppo_tabs_model.zip)
 checkpoints/
+*.zip
 
-# Downloaded tools / decompiled source, not part of the repo's own code
-BepInEx-*.zip
-ILSpy-*.zip
-UnityExplorer-*.zip
+# Downloaded tools / decompiled game source
 tools/
 docs/
 decompiled/
-
-# Disposable Phase 1 scratch script, not part of the real system
-random_policy_test.py

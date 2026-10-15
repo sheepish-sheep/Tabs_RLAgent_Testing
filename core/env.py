@@ -1,8 +1,4 @@
-"""Gym-style environment wrapper over the TabsAgentMod file bridge.
-
-Talks to the same state.json/plan.json/reset.json files the C# mod
-(TabsAgentMod) reads and writes.
-"""
+"""Gym-style environment over the TabsAgentMod file bridge (state/plan/reset/start_battle JSON)."""
 
 from __future__ import annotations
 
@@ -17,22 +13,15 @@ PLAN_FILE = "plan.json"
 RESET_FILE = "reset.json"
 START_BATTLE_FILE = "start_battle.json"
 
-DEFAULT_TIMEOUT_SECONDS = 180.0 
+DEFAULT_TIMEOUT_SECONDS = 180.0
 POLL_INTERVAL_SECONDS = 0.05
 RETRY_POLL_TIMEOUT_SECONDS = 5.0
 BATTLE_TIMEOUT_SECONDS = 180.0
-RESET_TIMEOUT_SECONDS = 60.0 
+RESET_TIMEOUT_SECONDS = 60.0
 WRITE_RETRY_ATTEMPTS = 5
 WRITE_RETRY_DELAY_SECONDS = 0.05
 OWN_SURVIVAL_WEIGHT = 0.25
 RESET_SETTLE_SECONDS = 1.5
-
-# How long to sit in the setup phase after asking for a battle before asking again. The
-# game's StartGame() silently does nothing unless both teams already have units placed (and
-# the placement intro / brush routine are idle), and the mod consumes each request file only
-# once -- so a start request that lands before the plan is applied (they are written ~0.09 s
-# apart, close to the mod's 0.1 s poll) is lost for good. The "no new state" resend below
-# never fires for this, because state.json is rewritten every 0.1 s.
 START_RESEND_SECONDS = 4.0
 
 
@@ -47,12 +36,9 @@ class TabsEnv:
         self._last_state_mtime = 0.0
         self._enemy_starting_count = 0
         self._enemy_starting_cost = 0
-        # Denominator for own_survival. The mod exposes no own-side cost field,
-        # so survival has to be measured by unit count against what we placed.
         self._own_starting_count = 0
-        self._own_count_checked = False
 
-    def reset(self, stage) -> Dict[str, Any]:
+    def reset(self) -> Dict[str, Any]:
         deadline = time.time() + RESET_TIMEOUT_SECONDS
         self._write_json(self.reset_path, {"RequestId": str(uuid.uuid4())})
         last_enemy_count = None
@@ -73,9 +59,7 @@ class TabsEnv:
                             unit.get("Count", 1) for unit in state.get("EnemyUnits", [])
                         )
                         self._enemy_starting_cost = state.get("EnemyStartingCost", 0)
-                        # Nothing is placed yet this episode; step()/place_army()
-                        # set the real value. Clearing it here stops a stale count
-                        # from the previous episode leaking into this one.
+                        # Clear last episode's count; place_army()/step() set the real one.
                         self._own_starting_count = 0
                         return state
                 else:
@@ -107,7 +91,6 @@ class TabsEnv:
         self._own_starting_count = len(placements)
         self._write_json(self.plan_path, payload)
         state = self._wait_for_new_state()
-        self._log_own_count_once(state)
         return state, *self._reward_done_info(state)
 
     def start_battle(self) -> Tuple[Dict[str, Any], float, bool, Dict[str, Any]]:
@@ -122,8 +105,6 @@ class TabsEnv:
                 got_new_state = True
                 if state.get("MatchOver"):
                     return state, *self._reward_done_info(state)
-                # Still in placement well after asking for a battle means the request was
-                # silently ignored, so ask again instead of waiting out the full timeout.
                 if state.get("Phase") == "setup" and time.time() - last_sent >= START_RESEND_SECONDS:
                     resends += 1
                     print(
@@ -140,7 +121,6 @@ class TabsEnv:
                     f"Timed out waiting for MatchOver after {BATTLE_TIMEOUT_SECONDS}s."
                 )
             if not got_new_state:
-
                 self._write_json(self.start_battle_path, {"RequestId": str(uuid.uuid4())})
                 last_sent = time.time()
 
@@ -180,16 +160,6 @@ class TabsEnv:
                 time.sleep(WRITE_RETRY_DELAY_SECONDS)
         raise last_error
 
-
-    def _log_own_count_once(self, state: Dict[str, Any]) -> None:
-        if self._own_count_checked:
-            return
-        self._own_count_checked = True
-        reported = sum(unit.get("Count", 1) for unit in (state.get("YourUnits") or []))
-        print(
-            flush=True,
-        )
-
     def _reward_done_info(self, state: Dict[str, Any]) -> Tuple[float, bool, Dict[str, Any]]:
         winner = state.get("Winner")
         done = bool(state.get("MatchOver"))
@@ -203,7 +173,6 @@ class TabsEnv:
                 if self._enemy_starting_cost > 0
                 else 0.0
             )
-            # Count-based, not cost-based: the mod exposes no own-side cost field.
             your_remaining = state.get("YourUnitsRemaining") or 0
             own_survival = (
                 min(1.0, your_remaining / self._own_starting_count)
@@ -211,9 +180,6 @@ class TabsEnv:
             )
 
             reward = enemy_destroyed
-            # Only credit survivors on an actual win. On a loss this term is 0
-            # anyway, but gating it means a draw or timer-ending battle cannot
-            # score above a real victory.
             if winner == "Red":
                 reward += OWN_SURVIVAL_WEIGHT * own_survival
 

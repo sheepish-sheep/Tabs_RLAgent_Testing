@@ -5,7 +5,6 @@ using BepInEx.Logging;
 using Landfall.TABS;
 using Landfall.TABS.GameMode;
 using Landfall.TABS.GameState;
-using Landfall.TABS.Services;
 using Landfall.TABS.AI.Systems;
 using Landfall.TABS.UnitPlacement;
 using Unity.Entities;
@@ -13,26 +12,16 @@ using UnityEngine;
 
 namespace TabsAgentMod
 {
-    public interface IGameStateCollector
-    {
-        bool TryCollect(out StatePayload state);
-        void ResetOutcomeLatch();
-    }
-
-    public class GameStateCollector : IGameStateCollector
+    public class GameStateCollector
     {
         private readonly ManualLogSource _logger;
-        private readonly ModConfig _config;
         private bool _loggedMissing;
-
 
         private bool _hasBeenInBattle;
         private bool _latchedMatchOver;
         private string _latchedWinner;
-        private int _latchedWinningTeamUnitsRemaining;
         private int _latchedYourUnitsRemaining;
         private int _latchedEnemyUnitsRemaining;
-        private List<UnitCount> _latchedSurvivingEnemyUnits;
         private int _latchedEnemyUnitsRemainingCost;
 
         public void ResetOutcomeLatch()
@@ -40,17 +29,14 @@ namespace TabsAgentMod
             _hasBeenInBattle = false;
             _latchedMatchOver = false;
             _latchedWinner = null;
-            _latchedWinningTeamUnitsRemaining = 0;
             _latchedYourUnitsRemaining = 0;
             _latchedEnemyUnitsRemaining = 0;
-            _latchedSurvivingEnemyUnits = null;
             _latchedEnemyUnitsRemainingCost = 0;
         }
 
-        public GameStateCollector(ManualLogSource logger, ModConfig config)
+        public GameStateCollector(ManualLogSource logger)
         {
             _logger = logger;
-            _config = config;
         }
 
         public bool TryCollect(out StatePayload state)
@@ -61,8 +47,6 @@ namespace TabsAgentMod
                 EnemyUnits = new List<UnitCount>(),
                 YourUnits = new List<UnitCount>(),
                 Phase = "unknown",
-                Campaign = false,
-                CampaignBattleBudget = 0
             };
 
             GameModeService service = ServiceLocator.GetService<GameModeService>();
@@ -73,7 +57,6 @@ namespace TabsAgentMod
                 return false;
             }
             bool isCampaign = mode is CampaignGameMode;
-            state.Campaign = isCampaign;
 
             if (mode.GameStateManager != null)
             {
@@ -154,7 +137,6 @@ namespace TabsAgentMod
                         state.Budget = mode.BattleBudget.GetMaxBudget(Team.Red);
                     }
                 }
-                state.CampaignBattleBudget = isCampaign ? state.Budget : 0;
             }
             else
             {
@@ -171,19 +153,15 @@ namespace TabsAgentMod
                 _latchedMatchOver = true;
                 _latchedWinner = mode.CachedCurrentWinner.ToString();
                 TeamSystem teamSystem = World.Active.GetExistingManager<TeamSystem>();
-                _latchedWinningTeamUnitsRemaining = teamSystem.GetWinConditionTeamUnits(mode.CachedCurrentWinner).Count;
                 _latchedYourUnitsRemaining = teamSystem.GetWinConditionTeamUnits(Team.Red).Count;
                 List<Unit> survivingEnemies = teamSystem.GetWinConditionTeamUnits(GetEnemyTeam());
                 _latchedEnemyUnitsRemaining = survivingEnemies.Count;
-                _latchedSurvivingEnemyUnits = CountUnitsByBlueprint(survivingEnemies);
                 _latchedEnemyUnitsRemainingCost = SumUnitBlueprintCost(survivingEnemies);
             }
             state.MatchOver = _latchedMatchOver;
             state.Winner = _latchedWinner;
-            state.WinningTeamUnitsRemaining = _latchedWinningTeamUnitsRemaining;
             state.YourUnitsRemaining = _latchedYourUnitsRemaining;
             state.EnemyUnitsRemaining = _latchedEnemyUnitsRemaining;
-            state.SurvivingEnemyUnits = _latchedSurvivingEnemyUnits ?? new List<UnitCount>();
             state.EnemyUnitsRemainingCost = _latchedEnemyUnitsRemainingCost;
 
             return true;
@@ -247,24 +225,6 @@ namespace TabsAgentMod
             {
                 object blueprint = GetBlueprintFromLayoutUnit(layout[i]);
                 AddUnitCount(counts, blueprint);
-            }
-
-            return ToUnitCounts(counts);
-        }
-
-        // Named survivor counts from a live TeamSystem unit list (post-battle), as opposed
-        // to CountLayoutUnits which reads the pre-battle placement plan.
-        private static List<UnitCount> CountUnitsByBlueprint(List<Unit> units)
-        {
-            if (units == null || units.Count == 0)
-            {
-                return new List<UnitCount>();
-            }
-
-            Dictionary<string, int> counts = new Dictionary<string, int>(units.Count, StringComparer.Ordinal);
-            for (int i = 0; i < units.Count; i++)
-            {
-                AddUnitCount(counts, units[i] != null ? units[i].unitBlueprint : null);
             }
 
             return ToUnitCounts(counts);
@@ -579,42 +539,6 @@ namespace TabsAgentMod
             }
             _logger.LogInfo(message);
             _loggedMissing = true;
-        }
-    }
-
-    public class MockStateCollector : IGameStateCollector
-    {
-        private readonly ModConfig _config;
-        private int _counter;
-
-        public MockStateCollector(ModConfig config)
-        {
-            _config = config;
-        }
-
-        public bool TryCollect(out StatePayload state)
-        {
-            _counter++;
-            state = new StatePayload
-            {
-                StateId = _counter.ToString(),
-                Budget = _config.MockBudget,
-                Phase = "setup",
-                Campaign = _config != null && _config.Campaign,
-                CampaignBattleBudget = _config != null ? _config.CampaignBattleBudget : 0,
-                EnemyUnits = new List<UnitCount>
-                {
-                    new UnitCount { Name = "Clubber", Count = 3 },
-                    new UnitCount { Name = "Archer", Count = 2 }
-                },
-                YourUnits = new List<UnitCount>(),
-            };
-            return true;
-        }
-
-        public void ResetOutcomeLatch()
-        {
-            // No latch to reset - MockStateCollector never reports a battle outcome.
         }
     }
 }

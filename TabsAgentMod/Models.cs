@@ -17,14 +17,10 @@ namespace TabsAgentMod
         public string Phase;
         public List<UnitCount> EnemyUnits;
         public List<UnitCount> YourUnits;
-        public bool Campaign;
-        public int CampaignBattleBudget;
         public bool MatchOver;
         public string Winner;
-        public int WinningTeamUnitsRemaining;
         public int YourUnitsRemaining;
         public int EnemyUnitsRemaining;
-        public List<UnitCount> SurvivingEnemyUnits;
         public int EnemyStartingCost;
         public int EnemyUnitsRemainingCost;
     }

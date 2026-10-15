@@ -1,6 +1,4 @@
-"""GA/CMA-ES army-placement search (Phase 2) - evolves armies against a fixed,
-already-loaded campaign level via TabsEnv, using pycma.
-"""
+"""CMA-ES search that evolves armies against the currently loaded TABS level."""
 
 import cma
 import json
@@ -12,7 +10,7 @@ from pathlib import Path
 from typing import List, Tuple
 
 from core.env import TabsEnv
-from core.unit_catalog import load_unit_catalog
+from core.unit_catalog import load_unit_catalog, placeable_unit_names
 
 MAX_UNITS = 25
 GENES_PER_UNIT = 3    # [unit_type_gene, x_gene, y_gene]
@@ -26,27 +24,6 @@ CHECKPOINT_PATH = Path("checkpoints/ga_latest.pkl")
 BEST_ARMY_PLAN_PATH = Path("checkpoints/best_army_plan.json")
 BEST_ARMY_META_PATH = Path("checkpoints/best_army_meta.json")
 _last_budget = None
-
-# These 10 units are real (confirmed via ILSpy decompile: they have real voice-line assets on
-# disk, and are referenced by name in the catalog), but their guids are simply not present in
-# this game installation's loaded unit blueprint database (DM.LandfallContentDatabase --
-# confirmed via reflection: 186 total guid entries, 0 resolved to null, so it's not an asset
-# load failure, the guids just aren't in the list at all). The mod can never place them --
-# TabsAgentMod\PlanApplier.cs logs "UnitBlueprint not found for placement" every time the
-# search happens to pick one. Filtering them out of the gene space here means the search can
-# no longer waste a slot on a unit that's guaranteed to be silently dropped.
-UNRESOLVABLE_UNITS = frozenset({
-    "Celestial Aegis",
-    "Chronomancer",
-    "Death Bringer",
-    "Divine Arbiter",
-    "Exiled Sentinel",
-    "Righteous Paladin",
-    "Shadow Walker",
-    "Tempest Lich",
-    "Void Cultist",
-    "Void Monarch",
-})
 
 
 # Decode a vector into a list of placements of units on the map
@@ -68,10 +45,10 @@ def decode_individual(vector, unit_names: List[str], unit_catalog, budget: float
     return placements
 
 # How well an army performs in a single evaluation
-def evaluate(vector, env: TabsEnv, unit_names: List[str], unit_catalog, stage) -> float:
+def evaluate(vector, env: TabsEnv, unit_names: List[str], unit_catalog) -> float:
     global _last_budget
     try:
-        state = env.reset(stage)
+        state = env.reset()
         budget = state["Budget"]
         _last_budget = budget
         placements = decode_individual(vector, unit_names, unit_catalog, budget)
@@ -85,18 +62,13 @@ def evaluate(vector, env: TabsEnv, unit_names: List[str], unit_catalog, stage) -
         return 0.0
 
 #tabs is not deterministic, so we need to evaluate the same vector multiple times to smooth out the noise
-def evaluate_averaged(vector, env: TabsEnv, unit_names: List[str], unit_catalog, stage, num_trials: int = NUM_REEVALUATIONS) -> float:
+def evaluate_averaged(vector, env: TabsEnv, unit_names: List[str], unit_catalog, num_trials: int = NUM_REEVALUATIONS) -> float:
     mean = 0
     for _ in range(num_trials):
-        cost = evaluate(vector, env, unit_names, unit_catalog, stage)
+        cost = evaluate(vector, env, unit_names, unit_catalog)
         mean += cost
     return mean / num_trials
 
-# A saved army's X/Y are fractions (0..1) of the mod's deployment box, so where a unit really
-# lands depends on the mod's placement settings, and those live in ONE global BepInEx config
-# file shared by every level. Recording them next to the army makes each checkpoint say how it
-# has to be replayed. Override the path with TABS_MOD_CONFIG_PATH if the game is installed
-# somewhere else.
 MOD_CONFIG_PATH = Path(os.environ.get(
     "TABS_MOD_CONFIG_PATH",
     r"C:\Program Files (x86)\Steam\steamapps\common\Totally Accurate Battle Simulator"
@@ -111,14 +83,6 @@ PLACEMENT_CONFIG_KEYS = {
 
 
 def read_placement_config() -> dict:
-    """Read the placement settings from the mod's config FILE.
-
-    Caveat: this is what the file says now, not necessarily what the running game loaded --
-    the mod reads its config once at launch, so editing the file mid-run changes what gets
-    recorded here without changing how units are placed. Any value that can't be read is
-    saved as null rather than failing, because this runs inside the training loop and must
-    never be the thing that kills a run.
-    """
     config = {key: None for key in PLACEMENT_CONFIG_KEYS}
     try:
         text = MOD_CONFIG_PATH.read_text(encoding="utf-8-sig")
@@ -179,8 +143,7 @@ def main():
     io_dir = Path(os.environ["LOCALAPPDATA"]) / "TabsAgentModIO"
     env = TabsEnv(io_dir)
     unit_catalog = load_unit_catalog(Path("data/units_dummy.json"))
-    unit_names = [name for name in unit_catalog.keys() if name not in UNRESOLVABLE_UNITS]
-    stage = None
+    unit_names = placeable_unit_names(unit_catalog)
     num_genes = MAX_UNITS * GENES_PER_UNIT
     half_span = POSITION_SPAN / 2.0
     lower = np.empty(num_genes)
@@ -236,17 +199,14 @@ def main():
         generations += 1
         solutions = es.ask()
         costs = [
-            evaluate_averaged(solution, env, unit_names, unit_catalog, stage, num_trials=POPULATION_REEVALUATIONS)
+            evaluate_averaged(solution, env, unit_names, unit_catalog, num_trials=POPULATION_REEVALUATIONS)
             for solution in solutions
         ]
         es.tell(solutions, costs)
         es.disp()
         best_index = int(np.argmin(costs))
-        best_cost_avg = evaluate_averaged(solutions[best_index], env, unit_names, unit_catalog, stage)
+        best_cost_avg = evaluate_averaged(solutions[best_index], env, unit_names, unit_catalog)
         print(f"Generation {generations}: averaged best cost = {best_cost_avg:.2f}", flush=True)
-
-        # Compare on the reevaluated score, not the population score: the latter
-        # is the one that got lucky, which is why it does not reproduce.
         if best_cost_avg < best_ever_cost:
             best_ever_cost = best_cost_avg
             best_ever_vector = np.array(solutions[best_index])

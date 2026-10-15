@@ -20,9 +20,6 @@
     <Reference Include="BepInEx">
       <HintPath>$(TABS_DIR)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>$(TABS_DIR)\BepInEx\core\0Harmony.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
@@ -41,6 +38,7 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <!-- UnitBlueprint derives from a Sirenix base class, so this is required even with no using. -->
     <Reference Include="Sirenix.Serialization">
       <HintPath>$(TABS_DIR)\TotallyAccurateBattleSimulator_Data\Managed\Sirenix.Serialization.dll</HintPath>
     </Reference>

@@ -5,20 +5,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 7,
-    "weapon": "Club",
     "size": "Small",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Club",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 60,
-        "damage_max": 120,
-        "cooldown_s": 2.0,
-        "dps": 60,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Basic melee unit.",
     "faction": "Tribal",
@@ -30,20 +18,8 @@
     "health": 77,
     "speed": 1.0,
     "attack": 8,
-    "weapon": "Wood Shield",
     "size": "Small",
     "attack_range": 1.7,
-    "weapons": [
-      {
-        "name": "Wood Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 15,
-        "damage_max": 30,
-        "cooldown_s": 1.5,
-        "dps": 20,
-        "range_wm": 1.7
-      }
-    ],
     "abilities": [],
     "description": "Defensive unit with shield.",
     "faction": "Tribal",
@@ -55,20 +31,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 12,
-    "weapon": "Spear Throw",
     "size": "Small",
     "attack_range": 12.0,
-    "weapons": [
-      {
-        "name": "Spear Throw",
-        "weapon_type": "Pierce - Ranged",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 3.0,
-        "dps": 33,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Throws spears from range.",
     "faction": "Tribal",
@@ -80,20 +44,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 16,
-    "weapon": "Boulder Throw",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Boulder Throw",
-        "weapon_type": "Bludgeon - Ranged",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 4.0,
-        "dps": 50,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Throws boulders for area damage.",
     "faction": "Tribal",
@@ -105,20 +57,8 @@
     "health": 100,
     "speed": 1.0,
     "attack": 30,
-    "weapon": "Bone Mage Staff",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Bone Mage Staff",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 5.0,
-        "dps": 20,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Summons bone spikes to impale enemies.",
     "faction": "Tribal",
@@ -130,29 +70,8 @@
     "health": 265,
     "speed": 1.0,
     "attack": 40,
-    "weapon": "Stone Axe",
     "size": "Medium",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Stone Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 250,
-        "damage_max": 250,
-        "cooldown_s": 1.0,
-        "dps": 250,
-        "range_wm": 1.5
-      },
-      {
-        "name": "Stone Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 250,
-        "damage_max": 250,
-        "cooldown_s": 1.0,
-        "dps": 250,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Dual-wielding heavy melee attacker.",
     "faction": "Tribal",
@@ -164,20 +83,8 @@
     "health": 2525,
     "speed": 1.2,
     "attack": 220,
-    "weapon": "Mammoth Charge",
     "size": "Huge",
     "attack_range": 3.0,
-    "weapons": [
-      {
-        "name": "Mammoth Charge",
-        "weapon_type": "Charge - Melee",
-        "damage_min": 20,
-        "damage_max": 240,
-        "cooldown_s": 5.0,
-        "dps": 40,
-        "range_wm": 3.0
-      }
-    ],
     "abilities": [],
     "description": "Massive tank unit that tramples enemies.",
     "faction": "Tribal",
@@ -189,20 +96,8 @@
     "health": 120,
     "speed": 1.0,
     "attack": 5,
-    "weapon": "Fists",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Punch",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 5,
-        "damage_max": 10,
-        "cooldown_s": 1.0,
-        "dps": 7,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Tiny, chaotic melee unit.",
     "faction": "Farmer",
@@ -214,20 +109,8 @@
     "health": 60,
     "speed": 1.0,
     "attack": 8,
-    "weapon": "Pitchfork",
     "size": "Small",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Pitchfork",
-        "weapon_type": "Pierce - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 1.5,
-        "dps": 33,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Basic melee unit with a pitchfork.",
     "faction": "Farmer",
@@ -239,20 +122,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 14,
-    "weapon": "Stick",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Stick",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 20,
-        "damage_max": 40,
-        "cooldown_s": 1.0,
-        "dps": 30,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Armored in hay for high defense.",
     "faction": "Farmer",
@@ -264,20 +135,8 @@
     "health": 60,
     "speed": 1.0,
     "attack": 34,
-    "weapon": "Throw Potion",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Throw Potion",
-        "weapon_type": "Throwable - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 2.0,
-        "dps": 0,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Throws potions that poison enemies.",
     "faction": "Farmer",
@@ -289,20 +148,8 @@
     "health": 600,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Scythe",
     "size": "Medium",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Scythe",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 1.5,
-        "dps": 66,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Powerful melee unit with a scythe.",
     "faction": "Farmer",
@@ -314,20 +161,8 @@
     "health": 1500,
     "speed": 3.0,
     "attack": 100,
-    "weapon": "Wheelbarrow",
     "size": "Large",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Wheelbarrow",
-        "weapon_type": "Vehicle - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "High-speed cart carrying fighters.",
     "faction": "Farmer",
@@ -339,20 +174,8 @@
     "health": 115,
     "speed": 1.0,
     "attack": 120,
-    "weapon": "Crow",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Crow Throw",
-        "weapon_type": "Summon - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 4.0,
-        "dps": 12,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Summons crows that attack enemies.",
     "faction": "Farmer",
@@ -364,20 +187,8 @@
     "health": 60,
     "speed": 1.0,
     "attack": 0,
-    "weapon": "Banjo",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Banjo",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 5,
-        "damage_max": 5,
-        "cooldown_s": 1.0,
-        "dps": 5,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Distracts enemies with music.",
     "faction": "Medieval",
@@ -389,20 +200,8 @@
     "health": 130,
     "speed": 1.0,
     "attack": 10,
-    "weapon": "Squire Sword",
     "size": "Small",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Squire Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 1.0,
-        "dps": 50,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Basic footman with a sword.",
     "faction": "Medieval",
@@ -414,20 +213,8 @@
     "health": 40,
     "speed": 1.0,
     "attack": 14,
-    "weapon": "Medieval Bow",
     "size": "Small",
     "attack_range": 12.0,
-    "weapons": [
-      {
-        "name": "Medieval Bow",
-        "weapon_type": "Pierce - Ranged",
-        "damage_min": 40,
-        "damage_max": 70,
-        "cooldown_s": 1.6,
-        "dps": 35,
-        "range_wm": 12.0
-      }
-    ],
     "abilities": [],
     "description": "Basic ranged damage dealer.",
     "faction": "Medieval",
@@ -439,20 +226,8 @@
     "health": 25,
     "speed": 1.0,
     "attack": 0,
-    "weapon": "Priest Staff",
     "size": "Small",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Heal",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 1.0,
-        "dps": 0,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Supports allies by healing them.",
     "faction": "Medieval",
@@ -464,29 +239,8 @@
     "health": 610,
     "speed": 0.8,
     "attack": 65,
-    "weapon": "Knight's Sword",
     "size": "Medium",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Knight's Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 1.0,
-        "dps": 100,
-        "range_wm": 1.5
-      },
-      {
-        "name": "Knight Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 10,
-        "damage_max": 20,
-        "cooldown_s": 1.0,
-        "dps": 10,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Heavily armored melee fighter.",
     "faction": "Medieval",
@@ -498,20 +252,8 @@
     "health": 300,
     "speed": 1.0,
     "attack": 100,
-    "weapon": "Catapult Rock",
     "size": "Large",
     "attack_range": 25.0,
-    "weapons": [
-      {
-        "name": "Catapult Rock",
-        "weapon_type": "Siege - Ranged",
-        "damage_min": 200,
-        "damage_max": 350,
-        "cooldown_s": 6.0,
-        "dps": 40,
-        "range_wm": 25.0
-      }
-    ],
     "abilities": [],
     "description": "Long-range splash damage siege weapon.",
     "faction": "Medieval",
@@ -523,20 +265,8 @@
     "health": 2377,
     "speed": 1.0,
     "attack": 150,
-    "weapon": "King's Sword",
     "size": "Large",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "King's Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 300,
-        "damage_max": 300,
-        "cooldown_s": 1.5,
-        "dps": 200,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Powerful boss melee unit.",
     "faction": "Medieval",
@@ -548,20 +278,8 @@
     "health": 60,
     "speed": 1.0,
     "attack": 10,
-    "weapon": "Ancient Shield",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Ancient Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 10,
-        "damage_max": 20,
-        "cooldown_s": 1.0,
-        "dps": 10,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Blocks attacks with a shield.",
     "faction": "Ancient",
@@ -573,20 +291,8 @@
     "health": 40,
     "speed": 1.0,
     "attack": 12,
-    "weapon": "Sarissa",
     "size": "Small",
     "attack_range": 2.5,
-    "weapons": [
-      {
-        "name": "Sarissa",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 1.2,
-        "dps": 41,
-        "range_wm": 2.5
-      }
-    ],
     "abilities": [],
     "description": "Longer reach melee unit.",
     "faction": "Ancient",
@@ -598,29 +304,8 @@
     "health": 100,
     "speed": 1.0,
     "attack": 18,
-    "weapon": "Short Spear",
     "size": "Small",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Short Spear",
-        "weapon_type": "Pierce - Melee",
-        "damage_min": 70,
-        "damage_max": 70,
-        "cooldown_s": 1.0,
-        "dps": 70,
-        "range_wm": 1.5
-      },
-      {
-        "name": "Hoplite Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 10,
-        "damage_max": 20,
-        "cooldown_s": 1.0,
-        "dps": 10,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Spearman with a shield.",
     "faction": "Ancient",
@@ -632,20 +317,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 30,
-    "weapon": "Snake Bow",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Snake Bow",
-        "weapon_type": "Pierce - Ranged",
-        "damage_min": 40,
-        "damage_max": 40,
-        "cooldown_s": 2.5,
-        "dps": 16,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Fires snakes that chase enemies.",
     "faction": "Ancient",
@@ -657,20 +330,8 @@
     "health": 300,
     "speed": 1.0,
     "attack": 90,
-    "weapon": "Ballista Bolt",
     "size": "Large",
     "attack_range": 20.0,
-    "weapons": [
-      {
-        "name": "Ballista Bolt",
-        "weapon_type": "Siege - Ranged",
-        "damage_min": 500,
-        "damage_max": 500,
-        "cooldown_s": 4.5,
-        "dps": 111,
-        "range_wm": 20.0
-      }
-    ],
     "abilities": [],
     "description": "Powerful long-range armor-piercing bolt.",
     "faction": "Ancient",
@@ -682,20 +343,8 @@
     "health": 1656,
     "speed": 2.0,
     "attack": 160,
-    "weapon": "Minotaur Axes",
     "size": "Large",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Minotaur Grab",
-        "weapon_type": "Ability - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 3.0,
-        "dps": 33,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Charges and tosses enemies with great force.",
     "faction": "Ancient",
@@ -707,20 +356,8 @@
     "health": 1125,
     "speed": 1.0,
     "attack": 200,
-    "weapon": "Thunderbolt",
     "size": "Medium",
     "attack_range": 14.0,
-    "weapons": [
-      {
-        "name": "Thunderbolt Throw",
-        "weapon_type": "Lightning - Ranged",
-        "damage_min": 120,
-        "damage_max": 120,
-        "cooldown_s": 1.8,
-        "dps": 66,
-        "range_wm": 14.0
-      }
-    ],
     "abilities": [],
     "description": "Throws lightning bolts that chain between enemies.",
     "faction": "Ancient",
@@ -732,20 +369,8 @@
     "health": 55,
     "speed": 1.5,
     "attack": 9,
-    "weapon": "Headbutt",
     "size": "Small",
     "attack_range": 0.5,
-    "weapons": [
-      {
-        "name": "Headbutt",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 1.0,
-        "dps": 50,
-        "range_wm": 0.5
-      }
-    ],
     "abilities": [],
     "description": "Launches itself head-first into enemies.",
     "faction": "Viking",
@@ -757,20 +382,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 16,
-    "weapon": "Ice Bow",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Ice Bow",
-        "weapon_type": "Pierce - Ranged",
-        "damage_min": 40,
-        "damage_max": 40,
-        "cooldown_s": 2.0,
-        "dps": 20,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Arrows slow and freeze targets.",
     "faction": "Viking",
@@ -782,29 +395,8 @@
     "health": 192,
     "speed": 1.1,
     "attack": 22,
-    "weapon": "Brawler Axe",
     "size": "Medium",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Brawler Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.0,
-        "dps": 80,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Brawler Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 10,
-        "damage_max": 20,
-        "cooldown_s": 1.0,
-        "dps": 10,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Tough melee bruiser with axe and shield.",
     "faction": "Viking",
@@ -816,29 +408,8 @@
     "health": 110,
     "speed": 1.0,
     "attack": 25,
-    "weapon": "Berserker Axes",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Berserker Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 60,
-        "damage_max": 60,
-        "cooldown_s": 0.8,
-        "dps": 75,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Berserker Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 60,
-        "damage_max": 60,
-        "cooldown_s": 0.8,
-        "dps": 75,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Leaps into battle with dual axes.",
     "faction": "Viking",
@@ -850,29 +421,8 @@
     "health": 150,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Valkyrie Swords",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Valkyrie Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.2,
-        "dps": 66,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Valkyrie Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.2,
-        "dps": 66,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Flying melee unit that dives on enemies.",
     "faction": "Viking",
@@ -884,20 +434,8 @@
     "health": 1400,
     "speed": 0.3,
     "attack": 100,
-    "weapon": "Longship",
     "size": "Large",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Longship (Boat)",
-        "weapon_type": "Vehicle - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Boat carried by Vikings and thrown at enemies.",
     "faction": "Viking",
@@ -909,20 +447,8 @@
     "health": 1109,
     "speed": 1.0,
     "attack": 150,
-    "weapon": "Jarl Axe",
     "size": "Large",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Jarl Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.2,
-        "dps": 166,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Heavily armored Viking with a giant axe.",
     "faction": "Viking",
@@ -934,20 +460,8 @@
     "health": 120,
     "speed": 1.0,
     "attack": 14,
-    "weapon": "Katana",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Katana",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.0,
-        "dps": 80,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": ["Projectile Block"],
     "description": "Agile melee unit that can deflect projectiles.",
     "faction": "Dynasty",
@@ -959,20 +473,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 18,
-    "weapon": "Fireworks Bow",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Fireworks Bow",
-        "weapon_type": "Explosive - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 2.0,
-        "dps": 25,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Fires explosive fireworks that propel enemies.",
     "faction": "Dynasty",
@@ -984,20 +486,8 @@
     "health": 648,
     "speed": 1.0,
     "attack": 25,
-    "weapon": "Monk Staff",
     "size": "Medium",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Monk Staff",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.0,
-        "dps": 80,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Durable melee unit with a staff.",
     "faction": "Dynasty",
@@ -1009,20 +499,8 @@
     "health": 150,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Shuriken",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Shuriken Throw",
-        "weapon_type": "Throwable - Ranged",
-        "damage_min": 20,
-        "damage_max": 20,
-        "cooldown_s": 0.5,
-        "dps": 40,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Throws shurikens rapidly at close range.",
     "faction": "Dynasty",
@@ -1034,20 +512,8 @@
     "health": 1500,
     "speed": 0.3,
     "attack": 100,
-    "weapon": "Fire Breath",
     "size": "Large",
     "attack_range": 5.0,
-    "weapons": [
-      {
-        "name": "Fire Breath",
-        "weapon_type": "Flamethrower - Ranged",
-        "damage_min": 10,
-        "damage_max": 10,
-        "cooldown_s": 0.1,
-        "dps": 100,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "Carried by servants, breathes continuous fire.",
     "faction": "Dynasty",
@@ -1059,20 +525,8 @@
     "health": 200,
     "speed": 1.0,
     "attack": 150,
-    "weapon": "Hwacha Arrow",
     "size": "Large",
     "attack_range": 20.0,
-    "weapons": [
-      {
-        "name": "Hwacha Arrow (Volley)",
-        "weapon_type": "Artillery - Ranged",
-        "damage_min": 10,
-        "damage_max": 10,
-        "cooldown_s": 0.1,
-        "dps": 100,
-        "range_wm": 20.0
-      }
-    ],
     "abilities": [],
     "description": "Fires a volley of arrows in rapid succession.",
     "faction": "Dynasty",
@@ -1084,20 +538,8 @@
     "health": 529,
     "speed": 1.0,
     "attack": 200,
-    "weapon": "Monkey King Staff",
     "size": "Small",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Monkey King Staff",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.0,
-        "dps": 80,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Trickster that can create illusionary clones.",
     "faction": "Dynasty",
@@ -1109,20 +551,8 @@
     "health": 60,
     "speed": 1.0,
     "attack": 5,
-    "weapon": "Paint Brush",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Paint Brush",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 10,
-        "damage_max": 10,
-        "cooldown_s": 1.0,
-        "dps": 10,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Dizzying melee unit that dodges attacks.",
     "faction": "Renaissance",
@@ -1134,20 +564,8 @@
     "health": 70,
     "speed": 1.0,
     "attack": 15,
-    "weapon": "Rapier",
     "size": "Small",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Rapier",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 40,
-        "damage_max": 40,
-        "cooldown_s": 0.5,
-        "dps": 80,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Swift duelist with a rapier.",
     "faction": "Renaissance",
@@ -1159,20 +577,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Renaissance Bow",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Renaissance Bow",
-        "weapon_type": "Special - Ranged",
-        "damage_min": 30,
-        "damage_max": 30,
-        "cooldown_s": 1.5,
-        "dps": 20,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Arrows attach balloons to lift enemies away.",
     "faction": "Renaissance",
@@ -1184,20 +590,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 25,
-    "weapon": "Musket",
     "size": "Small",
     "attack_range": 20.0,
-    "weapons": [
-      {
-        "name": "Musket",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 150,
-        "damage_max": 150,
-        "cooldown_s": 5.0,
-        "dps": 30,
-        "range_wm": 20.0
-      }
-    ],
     "abilities": [],
     "description": "High-damage, long-range firearm unit.",
     "faction": "Renaissance",
@@ -1209,20 +603,8 @@
     "health": 461,
     "speed": 1.0,
     "attack": 40,
-    "weapon": "Halberd",
     "size": "Medium",
     "attack_range": 2.5,
-    "weapons": [
-      {
-        "name": "Halberd",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 120,
-        "damage_max": 120,
-        "cooldown_s": 1.3,
-        "dps": 92,
-        "range_wm": 2.5
-      }
-    ],
     "abilities": [],
     "description": "Long-reach polearm infantry.",
     "faction": "Renaissance",
@@ -1234,29 +616,8 @@
     "health": 666,
     "speed": 2.5,
     "attack": 100,
-    "weapon": "Jouster Lance",
     "size": "Large",
     "attack_range": 4.0,
-    "weapons": [
-      {
-        "name": "Jouster Lance",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.0,
-        "dps": 200,
-        "range_wm": 4.0
-      },
-      {
-        "name": "Jouster Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 20,
-        "damage_max": 40,
-        "cooldown_s": 1.0,
-        "dps": 20,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Knight on horseback that charges with a lance.",
     "faction": "Renaissance",
@@ -1268,20 +629,8 @@
     "health": 4961,
     "speed": 1.1,
     "attack": 400,
-    "weapon": "DaVinci Cannons",
     "size": "Large",
     "attack_range": 15.0,
-    "weapons": [
-      {
-        "name": "DaVinci Cannons",
-        "weapon_type": "Artillery - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 0.2,
-        "dps": 250,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Rotating tank with multiple cannons.",
     "faction": "Renaissance",
@@ -1293,20 +642,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 10,
-    "weapon": "Flintlock Pistols",
     "size": "Small",
     "attack_range": 5.0,
-    "weapons": [
-      {
-        "name": "Flintlock (Pistol)",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 2.0,
-        "dps": 25,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "Dual-wields flintlock pistols and headbutts after shooting.",
     "faction": "Pirate",
@@ -1318,20 +655,8 @@
     "health": 200,
     "speed": 1.0,
     "attack": 16,
-    "weapon": "Blunderbuss",
     "size": "Small",
     "attack_range": 5.0,
-    "weapons": [
-      {
-        "name": "Blunderbuss",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 3.0,
-        "dps": 26,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "Short-range firearm with shield for defense.",
     "faction": "Pirate",
@@ -1343,20 +668,8 @@
     "health": 150,
     "speed": 1.0,
     "attack": 25,
-    "weapon": "Bomb Throw",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Bomb Throw",
-        "weapon_type": "Explosive - Ranged",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 3.0,
-        "dps": 33,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Throws lit bombs that explode on impact.",
     "faction": "Pirate",
@@ -1368,20 +681,8 @@
     "health": 270,
     "speed": 1.0,
     "attack": 30,
-    "weapon": "Harpoon Gun",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Harpoon Gun",
-        "weapon_type": "Pierce - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 2.0,
-        "dps": 25,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Fires a harpoon to pull enemies in.",
     "faction": "Pirate",
@@ -1393,20 +694,8 @@
     "health": 500,
     "speed": 1.0,
     "attack": 100,
-    "weapon": "Cannonball",
     "size": "Large",
     "attack_range": 18.0,
-    "weapons": [
-      {
-        "name": "Cannonball",
-        "weapon_type": "Siege - Ranged",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 4.0,
-        "dps": 50,
-        "range_wm": 18.0
-      }
-    ],
     "abilities": [],
     "description": "Mobile cannon firing heavy cannonballs.",
     "faction": "Pirate",
@@ -1418,29 +707,8 @@
     "health": 1165,
     "speed": 1.0,
     "attack": 150,
-    "weapon": "Captain's Cutlass",
     "size": "Large",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Captain's Cutlass",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 150,
-        "damage_max": 150,
-        "cooldown_s": 1.0,
-        "dps": 150,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Flintlock Blunderbuss",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 3.0,
-        "dps": 16,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "Pirate with a cutlass and flintlocks.",
     "faction": "Pirate",
@@ -1452,29 +720,8 @@
     "health": 2940,
     "speed": 1.0,
     "attack": 250,
-    "weapon": "Swords",
     "size": "Large",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Pirate Queen's Sabre",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.0,
-        "dps": 200,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Pirate Queen's Cutlass",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.0,
-        "dps": 200,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Dual-wields swords and uses explosive attacks.",
     "faction": "Pirate",
@@ -1486,29 +733,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 8,
-    "weapon": "Stiffy Sword",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Stiffy Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 40,
-        "damage_max": 40,
-        "cooldown_s": 1.0,
-        "dps": 40,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Stiffy Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 5,
-        "damage_max": 5,
-        "cooldown_s": 1.0,
-        "dps": 5,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Undead melee unit with sword and shield.",
     "faction": "Spooky",
@@ -1520,20 +746,8 @@
     "health": 52,
     "speed": 1.0,
     "attack": 18,
-    "weapon": "Fire Bow",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Fire Bow",
-        "weapon_type": "Fire - Ranged",
-        "damage_min": 40,
-        "damage_max": 40,
-        "cooldown_s": 2.0,
-        "dps": 20,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Shoots flaming arrows that set targets alight.",
     "faction": "Spooky",
@@ -1545,20 +759,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Candle Fire",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Candle Fire",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 10,
-        "damage_max": 10,
-        "cooldown_s": 1.5,
-        "dps": 6,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Blasts enemies with candles that push them back.",
     "faction": "Spooky",
@@ -1570,20 +772,8 @@
     "health": 243,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Hungry Hand",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Hungry Hand",
-        "weapon_type": "Bite - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 0.8,
-        "dps": 62,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Leaps onto targets and drains their health.",
     "faction": "Spooky",
@@ -1595,20 +785,8 @@
     "health": 300,
     "speed": 1.0,
     "attack": 100,
-    "weapon": "Pumpkin",
     "size": "Large",
     "attack_range": 20.0,
-    "weapons": [
-      {
-        "name": "Pumpkin",
-        "weapon_type": "Explosive - Ranged",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 6.0,
-        "dps": 33,
-        "range_wm": 20.0
-      }
-    ],
     "abilities": [],
     "description": "Launches explosive pumpkins that deal area damage.",
     "faction": "Spooky",
@@ -1620,20 +798,8 @@
     "health": 200,
     "speed": 1.0,
     "attack": 100,
-    "weapon": "Sword Casting",
     "size": "Small",
     "attack_range": 15.0,
-    "weapons": [
-      {
-        "name": "Sword Casting",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 0.5,
-        "dps": 100,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Launches volleys of magical swords at enemies.",
     "faction": "Spooky",
@@ -1645,20 +811,8 @@
     "health": 1335,
     "speed": 1.0,
     "attack": 250,
-    "weapon": "Reaper's Scythe",
     "size": "Large",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Reaper's Scythe",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 150,
-        "damage_max": 150,
-        "cooldown_s": 1.5,
-        "dps": 100,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Floats and uses a scythe and shadow hands to slay multiple foes.",
     "faction": "Spooky",
@@ -1670,20 +824,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 10,
-    "weapon": "Dynamite",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Dynamite Throw",
-        "weapon_type": "Explosive - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 2.0,
-        "dps": 25,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Throws bundles of dynamite that explode.",
     "faction": "Wild West",
@@ -1695,20 +837,8 @@
     "health": 218,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Pick Axe",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Pick Axe",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.2,
-        "dps": 66,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Swings a pickaxe with great force.",
     "faction": "Wild West",
@@ -1720,20 +850,8 @@
     "health": 432,
     "speed": 1.0,
     "attack": 40,
-    "weapon": "Cactus Spikes",
     "size": "Medium",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Cactus Grab",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 1.0,
-        "dps": 50,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Covered in spikes, absorbs hits and damages attackers.",
     "faction": "Wild West",
@@ -1745,20 +863,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 65,
-    "weapon": "Revolver",
     "size": "Small",
     "attack_range": 15.0,
-    "weapons": [
-      {
-        "name": "Revolver Bullet Rain",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 20,
-        "damage_max": 20,
-        "cooldown_s": 0.1,
-        "dps": 200,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Fires a hail of bullets into the sky to rain down on enemies.",
     "faction": "Wild West",
@@ -1770,20 +876,8 @@
     "health": 545,
     "speed": 3.0,
     "attack": 74,
-    "weapon": "Lasso",
     "size": "Large",
     "attack_range": 5.0,
-    "weapons": [
-      {
-        "name": "Lasso",
-        "weapon_type": "Ability - Ranged",
-        "damage_min": 10,
-        "damage_max": 10,
-        "cooldown_s": 1.5,
-        "dps": 6,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "Rides a horse and lassos enemies, dragging them.",
     "faction": "Wild West",
@@ -1795,20 +889,8 @@
     "health": 75,
     "speed": 1.0,
     "attack": 90,
-    "weapon": "Winchester",
     "size": "Small",
     "attack_range": 20.0,
-    "weapons": [
-      {
-        "name": "Winchester",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 3.5,
-        "dps": 57,
-        "range_wm": 20.0
-      }
-    ],
     "abilities": [],
     "description": "Sniper unit that fires powerful rifle shots.",
     "faction": "Wild West",
@@ -1820,20 +902,8 @@
     "health": 110,
     "speed": 1.0,
     "attack": 120,
-    "weapon": "Revolver (Dual)",
     "size": "Small",
     "attack_range": 15.0,
-    "weapons": [
-      {
-        "name": "Revolver Quickdraw",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 0.2,
-        "dps": 250,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Fastest gunslinger that fires bullets almost instantly.",
     "faction": "Wild West",
@@ -1845,20 +915,8 @@
     "health": 30,
     "speed": 1.0,
     "attack": 3,
-    "weapon": "Fists",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Peasant Fist",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 5,
-        "damage_max": 5,
-        "cooldown_s": 1.0,
-        "dps": 5,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Extremely weak commoner unit.",
     "faction": "Legacy",
@@ -1870,20 +928,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 0,
-    "weapon": "Stay Banner",
     "size": "Small",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Stay Banner",
-        "weapon_type": "Support - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Prevents nearby allies from moving (stay put).",
     "faction": "Legacy",
@@ -1895,20 +941,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 12,
-    "weapon": "Poacher Bow",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Poacher Bow",
-        "weapon_type": "Pierce - Ranged",
-        "damage_min": 30,
-        "damage_max": 30,
-        "cooldown_s": 1.2,
-        "dps": 25,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Old-style archer with a short-range bow.",
     "faction": "Legacy",
@@ -1920,20 +954,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 22,
-    "weapon": "Blow Dart",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Blow Dart",
-        "weapon_type": "Poison - Ranged",
-        "damage_min": 10,
-        "damage_max": 10,
-        "cooldown_s": 1.5,
-        "dps": 6,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Fires poison darts that damage over time.",
     "faction": "Legacy",
@@ -1945,20 +967,8 @@
     "health": 40,
     "speed": 1.0,
     "attack": 30,
-    "weapon": "Pike",
     "size": "Small",
     "attack_range": 4.5,
-    "weapons": [
-      {
-        "name": "Pike",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 1.0,
-        "dps": 100,
-        "range_wm": 4.5
-      }
-    ],
     "abilities": [],
     "description": "Extremely long reach spear unit.",
     "faction": "Legacy",
@@ -1970,20 +980,8 @@
     "health": 40,
     "speed": 1.0,
     "attack": 35,
-    "weapon": "Barrel",
     "size": "Small",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Barrel Explosion",
-        "weapon_type": "Explosive - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Rolls an explosive barrel into enemies.",
     "faction": "Legacy",
@@ -1995,29 +993,8 @@
     "health": 292,
     "speed": 1.0,
     "attack": 45,
-    "weapon": "Boxer's Glove",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Boxer's Glove",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 60,
-        "damage_max": 60,
-        "cooldown_s": 0.5,
-        "dps": 120,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Boxer's Glove",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 60,
-        "damage_max": 60,
-        "cooldown_s": 0.5,
-        "dps": 120,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Fast punching melee unit.",
     "faction": "Legacy",
@@ -2029,20 +1006,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 0,
-    "weapon": "Charge Flag",
     "size": "Small",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Charge Flag",
-        "weapon_type": "Support - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Buffs nearby allies to charge forward faster.",
     "faction": "Legacy",
@@ -2054,20 +1019,8 @@
     "health": 65,
     "speed": 1.0,
     "attack": 75,
-    "weapon": "Pharaoh Sickle",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Pharaoh Sickle",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 3.0,
-        "dps": 0,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Stuns enemies with a sand magic ability.",
     "faction": "Legacy",
@@ -2079,20 +1032,8 @@
     "health": 926,
     "speed": 1.0,
     "attack": 120,
-    "weapon": "Wizard Staff",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Wizard Staff",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 150,
-        "damage_max": 150,
-        "cooldown_s": 2.0,
-        "dps": 75,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Casts powerful lightning spells at enemies.",
     "faction": "Legacy",
@@ -2104,20 +1045,8 @@
     "health": 772,
     "speed": 6.0,
     "attack": 180,
-    "weapon": "Chariot",
     "size": "Large",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Chariot Cart",
-        "weapon_type": "Vehicle - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Horse-drawn chariot that runs down enemies.",
     "faction": "Legacy",
@@ -2129,20 +1058,8 @@
     "health": 1690,
     "speed": 1.0,
     "attack": 220,
-    "weapon": "Thor's Hammer",
     "size": "Large",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Thor's Hammer",
-        "weapon_type": "Lightning - Ranged",
-        "damage_min": 300,
-        "damage_max": 300,
-        "cooldown_s": 2.0,
-        "dps": 150,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "God of thunder with a mighty hammer throw.",
     "faction": "Legacy",
@@ -2154,20 +1071,8 @@
     "health": 4500,
     "speed": 1.0,
     "attack": 600,
-    "weapon": "Tank Barrel",
     "size": "Large",
     "attack_range": 20.0,
-    "weapons": [
-      {
-        "name": "Tank Barrel",
-        "weapon_type": "Artillery - Ranged",
-        "damage_min": 500,
-        "damage_max": 500,
-        "cooldown_s": 3.0,
-        "dps": 166,
-        "range_wm": 20.0
-      }
-    ],
     "abilities": [],
     "description": "Armored tank with a powerful cannon.",
     "faction": "Legacy",
@@ -2179,29 +1084,8 @@
     "health": 4629,
     "speed": 2.0,
     "attack": 1000,
-    "weapon": "Super Boxer's Glove",
     "size": "Medium",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Super Boxer's Glove",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 500,
-        "damage_max": 500,
-        "cooldown_s": 0.2,
-        "dps": 2500,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Super Boxer's Glove",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 500,
-        "damage_max": 500,
-        "cooldown_s": 0.2,
-        "dps": 2500,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Extremely fast and strong boxer with electric punches.",
     "faction": "Legacy",
@@ -2213,20 +1097,8 @@
     "health": 1322500,
     "speed": 1.3,
     "attack": 999999,
-    "weapon": "Dark Peasant Hands",
     "size": "Huge",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Dark Peasant Hands",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.5,
-        "dps": 0,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Levitating being that summons dark spikes to impale enemies.",
     "faction": "Legacy",
@@ -2238,20 +1110,8 @@
     "health": 132250,
     "speed": 2.0,
     "attack": 999999,
-    "weapon": "Super Peasant Punch",
     "size": "Huge",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Super Peasant Punch",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 1000000,
-        "damage_max": 1000000,
-        "cooldown_s": 0.1,
-        "dps": 10000000,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Flying unit with devastating punches.",
     "faction": "Legacy",
@@ -2263,29 +1123,8 @@
     "health": 146,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Devout Gauntlet",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Devout Gauntlet",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 60,
-        "damage_max": 60,
-        "cooldown_s": 0.5,
-        "dps": 120,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Devout Gauntlet",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 60,
-        "damage_max": 60,
-        "cooldown_s": 0.5,
-        "dps": 120,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Melee unit with powerful gauntlets.",
     "faction": "Fantasy Good",
@@ -2297,20 +1136,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 30,
-    "weapon": "Aegis Shield",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Aegis Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Defensive unit with a shield that reflects projectiles.",
     "faction": "Fantasy Good",
@@ -2322,29 +1149,8 @@
     "health": 180,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Radiant Glaive",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Radiant Glaive Throw",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 2.0,
-        "dps": 50,
-        "range_wm": 10.0
-      },
-      {
-        "name": "Radiant Glaive Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Throws a magical glaive that returns like a boomerang.",
     "faction": "Fantasy Good",
@@ -2356,29 +1162,8 @@
     "health": 792,
     "speed": 1.0,
     "attack": 80,
-    "weapon": "Righteous Paladin Mace",
     "size": "Medium",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Righteous Paladin Mace",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 150,
-        "damage_max": 150,
-        "cooldown_s": 1.2,
-        "dps": 125,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Righteous Paladin Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Armored paladin with mace and shield, heals slightly when slaying foes.",
     "faction": "Fantasy Good",
@@ -2390,20 +1175,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 100,
-    "weapon": "Divine Arbiter Book",
     "size": "Small",
     "attack_range": 15.0,
-    "weapons": [
-      {
-        "name": "Divine Arbiter Book",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 4.0,
-        "dps": 50,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Caster that calls down powerful smiting blasts on enemies.",
     "faction": "Fantasy Good",
@@ -2415,20 +1188,8 @@
     "health": 1818,
     "speed": 1.2,
     "attack": 200,
-    "weapon": "Sacred Elephant Spear Throw",
     "size": "Large",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Sacred Elephant Spear Throw",
-        "weapon_type": "Pierce - Ranged",
-        "damage_min": 150,
-        "damage_max": 150,
-        "cooldown_s": 4.0,
-        "dps": 37,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Armored elephant that throws spears at enemies.",
     "faction": "Fantasy Good",
@@ -2440,20 +1201,8 @@
     "health": 1103,
     "speed": 1.0,
     "attack": 300,
-    "weapon": "Time Gauntlets",
     "size": "Large",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Time Ninja Gauntlet",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 3.0,
-        "dps": 66,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Mage that can transform into a powerful god form at low health.",
     "faction": "Fantasy Good",
@@ -2465,20 +1214,8 @@
     "health": 54,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Shadow Walker Dagger",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Shadow Walker Dagger",
-        "weapon_type": "Knife - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 0.8,
-        "dps": 62,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Teleports behind enemies and stabs with daggers.",
     "faction": "Fantasy Evil",
@@ -2490,29 +1227,8 @@
     "health": 425,
     "speed": 0.8,
     "attack": 30,
-    "weapon": "Shield Axes",
     "size": "Medium",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Sentinel Right Shield Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 1.0,
-        "dps": 100,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Sentinel Left Shield Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 1.0,
-        "dps": 100,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Armored demon with dual axe-shields for offense and defense.",
     "faction": "Fantasy Evil",
@@ -2524,20 +1240,8 @@
     "health": 242,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Fire Bombs",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Mad Mechanic Fire",
-        "weapon_type": "Explosive - Ranged",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 2.5,
-        "dps": 32,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Hurls fiery explosives that set areas ablaze.",
     "faction": "Fantasy Evil",
@@ -2549,29 +1253,8 @@
     "health": 727,
     "speed": 1.0,
     "attack": 80,
-    "weapon": "Void Mace & Shield",
     "size": "Medium",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Void Cultist Mace",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 120,
-        "damage_max": 120,
-        "cooldown_s": 1.2,
-        "dps": 100,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Void Cultist Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Dark warrior with mace and shield who summons void energy.",
     "faction": "Fantasy Evil",
@@ -2583,20 +1266,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 100,
-    "weapon": "Tempest Lich Staff",
     "size": "Small",
     "attack_range": 12.0,
-    "weapons": [
-      {
-        "name": "Tempest Lich Staff",
-        "weapon_type": "Lightning - Ranged",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.5,
-        "dps": 53,
-        "range_wm": 12.0
-      }
-    ],
     "abilities": [],
     "description": "Lightning mage that creates storm clouds of energy.",
     "faction": "Fantasy Evil",
@@ -2608,29 +1279,8 @@
     "health": 1152,
     "speed": 2.5,
     "attack": 200,
-    "weapon": "Warglaives",
     "size": "Large",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Death Bringer Warglaive",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 250,
-        "damage_max": 250,
-        "cooldown_s": 0.8,
-        "dps": 312,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Death Bringer Warglaive",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 250,
-        "damage_max": 250,
-        "cooldown_s": 0.8,
-        "dps": 312,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Fast dual-wielding demon that slices through enemies.",
     "faction": "Fantasy Evil",
@@ -2642,29 +1292,8 @@
     "health": 1210,
     "speed": 1.0,
     "attack": 300,
-    "weapon": "Void Monarch Sword",
     "size": "Large",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Void Monarch Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.0,
-        "dps": 200,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Void Monarch Claymore",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.0,
-        "dps": 200,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Transforms into a powerful demonic form at half health, unleashing devastating attacks.",
     "faction": "Fantasy Evil",
@@ -2676,20 +1305,8 @@
     "health": 120,
     "speed": 1.0,
     "attack": 12,
-    "weapon": "Ballooner Grab",
     "size": "Small",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Ballooner Grab",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 1.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Grabs onto enemies and lifts them into the sky.",
     "faction": "Secret",
@@ -2701,20 +1318,8 @@
     "health": 140,
     "speed": 1.0,
     "attack": 15,
-    "weapon": "Bomb on a Stick",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Bomb on a Stick",
-        "weapon_type": "Explosive - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Charges in with a bomb on a stick, exploding on contact.",
     "faction": "Secret",
@@ -2726,20 +1331,8 @@
     "health": 40,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Ancient Fan",
     "size": "Small",
     "attack_range": 5.0,
-    "weapons": [
-      {
-        "name": "Ancient Fan",
-        "weapon_type": "Fan - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.2,
-        "dps": 0,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "Uses fans to create gusts of wind that push enemies away.",
     "faction": "Secret",
@@ -2751,20 +1344,8 @@
     "health": 150,
     "speed": 3.0,
     "attack": 20,
-    "weapon": "Bite",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Bite",
-        "weapon_type": "Bite - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.2,
-        "dps": 66,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Fast small dinosaur that bites enemies.",
     "faction": "Secret",
@@ -2776,20 +1357,8 @@
     "health": 130,
     "speed": 1.0,
     "attack": 20,
-    "weapon": "Teacher Sword",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Teacher Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 60,
-        "damage_max": 60,
-        "cooldown_s": 0.8,
-        "dps": 75,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Master swordsman who can parry enemy strikes.",
     "faction": "Secret",
@@ -2801,29 +1370,8 @@
     "health": 25,
     "speed": 1.0,
     "attack": 30,
-    "weapon": "Daggers",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Jester Dagger (Left)",
-        "weapon_type": "Knife - Melee",
-        "damage_min": 30,
-        "damage_max": 30,
-        "cooldown_s": 0.5,
-        "dps": 60,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Jester Dagger (Right)",
-        "weapon_type": "Knife - Melee",
-        "damage_min": 30,
-        "damage_max": 30,
-        "cooldown_s": 0.5,
-        "dps": 60,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Acrobatic unit that dodges attacks and throws daggers.",
     "faction": "Secret",
@@ -2835,20 +1383,8 @@
     "health": 397,
     "speed": 1.0,
     "attack": 35,
-    "weapon": "Ball 'N' Chain",
     "size": "Medium",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Ball 'N' Chain",
-        "weapon_type": "Flail - Melee",
-        "damage_min": 150,
-        "damage_max": 150,
-        "cooldown_s": 1.2,
-        "dps": 125,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Swings a heavy flail that can hit multiple enemies.",
     "faction": "Secret",
@@ -2860,20 +1396,8 @@
     "health": 80,
     "speed": 1.0,
     "attack": 35,
-    "weapon": "Chu Ko Nu",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Chu Ko Nu",
-        "weapon_type": "Repeating Crossbow - Ranged",
-        "damage_min": 20,
-        "damage_max": 20,
-        "cooldown_s": 0.2,
-        "dps": 100,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Fires rapid volleys of crossbow bolts.",
     "faction": "Secret",
@@ -2885,20 +1409,8 @@
     "health": 360,
     "speed": 1.0,
     "attack": 35,
-    "weapon": "Executioner's Axe",
     "size": "Medium",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Executioner's Axe",
-        "weapon_type": "Axe - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.3,
-        "dps": 153,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": [],
     "description": "Swings a huge axe that can behead foes in one hit.",
     "faction": "Secret",
@@ -2910,20 +1422,8 @@
     "health": 221,
     "speed": 1.0,
     "attack": 40,
-    "weapon": "Shout",
     "size": "Medium",
     "attack_range": 5.0,
-    "weapons": [
-      {
-        "name": "Shout",
-        "weapon_type": "Ability - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 3.0,
-        "dps": 0,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "Shouts with immense force, knocking enemies back.",
     "faction": "Secret",
@@ -2935,20 +1435,8 @@
     "health": 150,
     "speed": 1.0,
     "attack": 40,
-    "weapon": "Taekwondo Kick",
     "size": "Small",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Taekwondo Kick",
-        "weapon_type": "Unarmed - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 1.0,
-        "dps": 100,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Martial artist that uses strong kicks to knock out enemies.",
     "faction": "Secret",
@@ -2960,29 +1448,8 @@
     "health": 250,
     "speed": 3.0,
     "attack": 45,
-    "weapon": "Raptor Rider Spear",
     "size": "Large",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Raptor Rider Spear",
-        "weapon_type": "Pierce - Melee",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 1.0,
-        "dps": 80,
-        "range_wm": 2.0
-      },
-      {
-        "name": "Raptor Rider Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Cavalry unit riding a raptor, armed with spear and shield.",
     "faction": "Secret",
@@ -2994,20 +1461,8 @@
     "health": 5,
     "speed": 1.0,
     "attack": 0,
-    "weapon": "Cheerleading Pom",
     "size": "Small",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Cheerleading Pom",
-        "weapon_type": "Support - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Boosts the attack speed of a targeted ally.",
     "faction": "Secret",
@@ -3019,20 +1474,8 @@
     "health": 84,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Heart Bow",
     "size": "Small",
     "attack_range": 15.0,
-    "weapons": [
-      {
-        "name": "Heart Bow",
-        "weapon_type": "Charm - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 1.5,
-        "dps": 0,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Shoots heart arrows that make enemies fall in love (stopping them from fighting).",
     "faction": "Secret",
@@ -3044,20 +1487,8 @@
     "health": 726,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Mace Spin",
     "size": "Medium",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Mace Spin",
-        "weapon_type": "Ability - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 0.2,
-        "dps": 250,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Spins with two maces, knocking away anyone nearby.",
     "faction": "Secret",
@@ -3069,20 +1500,8 @@
     "health": 72,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Clam Throw",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Clam Throw",
-        "weapon_type": "Summon - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 1.0,
-        "dps": 0,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Throws clams that spawn biting clams on impact.",
     "faction": "Secret",
@@ -3094,20 +1513,8 @@
     "health": 50,
     "speed": 1.0,
     "attack": 50,
-    "weapon": "Thrown Present",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Thrown Present",
-        "weapon_type": "Special - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 5.0,
-        "dps": 0,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Throws a present that spawns a random unit when it breaks.",
     "faction": "Secret",
@@ -3119,20 +1526,8 @@
     "health": 120,
     "speed": 1.0,
     "attack": 65,
-    "weapon": "Icicle Throw",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Icicle Throw",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 2.0,
-        "dps": 25,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Launches icy projectiles that freeze enemies in place.",
     "faction": "Secret",
@@ -3144,20 +1539,8 @@
     "health": 432,
     "speed": 1.0,
     "attack": 80,
-    "weapon": "Infernal Whip",
     "size": "Medium",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Infernal Whip",
-        "weapon_type": "Whip - Melee",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 1.0,
-        "dps": 100,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Wields a flaming whip that deals continuous damage.",
     "faction": "Secret",
@@ -3169,20 +1552,8 @@
     "health": 350,
     "speed": 1.0,
     "attack": 85,
-    "weapon": "Safe",
     "size": "Medium",
     "attack_range": 0.0,
-    "weapons": [
-      {
-        "name": "Safe",
-        "weapon_type": "Throwable - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 0.0
-      }
-    ],
     "abilities": [],
     "description": "Two outlaws carry a heavy safe that crushes enemies when dropped.",
     "faction": "Secret",
@@ -3194,20 +1565,8 @@
     "health": 300,
     "speed": 1.0,
     "attack": 100,
-    "weapon": "Witch Staff",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Witch Staff",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 80,
-        "damage_max": 80,
-        "cooldown_s": 2.0,
-        "dps": 40,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Flies on a broom and casts curses/potions at enemies.",
     "faction": "Secret",
@@ -3219,20 +1578,8 @@
     "health": 300,
     "speed": 1.0,
     "attack": 110,
-    "weapon": "Banshee Hands",
     "size": "Small",
     "attack_range": 8.0,
-    "weapons": [
-      {
-        "name": "Banshee Hands",
-        "weapon_type": "Magic - Melee",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 1.5,
-        "dps": 33,
-        "range_wm": 8.0
-      }
-    ],
     "abilities": [],
     "description": "Floating undead that emits a deadly scream to damage and knock back foes.",
     "faction": "Secret",
@@ -3244,29 +1591,8 @@
     "health": 463,
     "speed": 1.0,
     "attack": 120,
-    "weapon": "Necromancer Lantern",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Necromancer Knife",
-        "weapon_type": "Knife - Melee",
-        "damage_min": 30,
-        "damage_max": 30,
-        "cooldown_s": 1.0,
-        "dps": 30,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Necromancer Lantern",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 8.0,
-        "dps": 0,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Summons skeletons from defeated enemies to fight for him.",
     "faction": "Secret",
@@ -3278,20 +1604,8 @@
     "health": 576,
     "speed": 1.0,
     "attack": 120,
-    "weapon": "Solar Architect Wand",
     "size": "Medium",
     "attack_range": 12.0,
-    "weapons": [
-      {
-        "name": "Solar Architect Wand",
-        "weapon_type": "Magic - Ranged",
-        "damage_min": 100,
-        "damage_max": 100,
-        "cooldown_s": 3.0,
-        "dps": 33,
-        "range_wm": 12.0
-      }
-    ],
     "abilities": [],
     "description": "Shoots concentrated beams of sunlight that explode on impact.",
     "faction": "Secret",
@@ -3303,20 +1617,8 @@
     "health": 1500,
     "speed": 3.0,
     "attack": 140,
-    "weapon": "Fire Breath (Wheelbarrow)",
     "size": "Large",
     "attack_range": 5.0,
-    "weapons": [
-      {
-        "name": "Fire Breath Wheelbarrow",
-        "weapon_type": "Flamethrower - Ranged",
-        "damage_min": 10,
-        "damage_max": 10,
-        "cooldown_s": 0.1,
-        "dps": 100,
-        "range_wm": 5.0
-      }
-    ],
     "abilities": [],
     "description": "A wheelbarrow contraption carrying a small dragon that breathes fire.",
     "faction": "Secret",
@@ -3328,20 +1630,8 @@
     "health": 500,
     "speed": 1.0,
     "attack": 150,
-    "weapon": "Bomb Cannonball",
     "size": "Large",
     "attack_range": 18.0,
-    "weapons": [
-      {
-        "name": "Bomb Cannonball",
-        "weapon_type": "Siege - Ranged",
-        "damage_min": 300,
-        "damage_max": 300,
-        "cooldown_s": 4.0,
-        "dps": 75,
-        "range_wm": 18.0
-      }
-    ],
     "abilities": [],
     "description": "A powerful cannon that shoots explosive bombs.",
     "faction": "Secret",
@@ -3353,29 +1643,8 @@
     "health": 2700,
     "speed": 1.0,
     "attack": 170,
-    "weapon": "Giant Stiffy Sword",
     "size": "Huge",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Giant Stiffy Sword",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 300,
-        "damage_max": 300,
-        "cooldown_s": 1.5,
-        "dps": 200,
-        "range_wm": 2.0
-      },
-      {
-        "name": "Giant Stiffy Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Enormous skeletal giant wielding a massive sword and shield.",
     "faction": "Secret",
@@ -3387,29 +1656,8 @@
     "health": 850,
     "speed": 2.5,
     "attack": 180,
-    "weapon": "Cavalry Spear",
     "size": "Large",
     "attack_range": 3.0,
-    "weapons": [
-      {
-        "name": "Cavalry Spear",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.0,
-        "dps": 200,
-        "range_wm": 3.0
-      },
-      {
-        "name": "Cavalry Shield",
-        "weapon_type": "Shield - Melee",
-        "damage_min": 0,
-        "damage_max": 0,
-        "cooldown_s": 0.0,
-        "dps": 0,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Knight on horseback with a long spear who charges through enemies.",
     "faction": "Secret",
@@ -3421,20 +1669,8 @@
     "health": 1080,
     "speed": 1.0,
     "attack": 180,
-    "weapon": "Vlad's Spear",
     "size": "Large",
     "attack_range": 3.0,
-    "weapons": [
-      {
-        "name": "Vlad's Spear",
-        "weapon_type": "Stake - Melee",
-        "damage_min": 300,
-        "damage_max": 300,
-        "cooldown_s": 1.0,
-        "dps": 300,
-        "range_wm": 3.0
-      }
-    ],
     "abilities": [],
     "description": "Impales enemies on a giant wooden stake, knocking many back at once.",
     "faction": "Secret",
@@ -3446,20 +1682,8 @@
     "health": 500,
     "speed": 1.0,
     "attack": 200,
-    "weapon": "Gatling Gun",
     "size": "Large",
     "attack_range": 20.0,
-    "weapons": [
-      {
-        "name": "Gatling Gun Barrel",
-        "weapon_type": "Gun - Ranged",
-        "damage_min": 20,
-        "damage_max": 20,
-        "cooldown_s": 0.1,
-        "dps": 200,
-        "range_wm": 20.0
-      }
-    ],
     "abilities": [],
     "description": "Rapid-firing multi-barrel gun that increases fire rate over time.",
     "faction": "Secret",
@@ -3471,29 +1695,8 @@
     "health": 3000,
     "speed": 1.0,
     "attack": 260,
-    "weapon": "Blackbeard's Anchor",
     "size": "Large",
     "attack_range": 1.0,
-    "weapons": [
-      {
-        "name": "Blackbeard's Anchor",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 300,
-        "damage_max": 300,
-        "cooldown_s": 1.2,
-        "dps": 250,
-        "range_wm": 1.0
-      },
-      {
-        "name": "Blackbeard's Anchor",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 300,
-        "damage_max": 300,
-        "cooldown_s": 1.2,
-        "dps": 250,
-        "range_wm": 1.0
-      }
-    ],
     "abilities": [],
     "description": "Pirate boss wielding two massive anchors, extremely tough and deals area damage.",
     "faction": "Secret",
@@ -3505,20 +1708,8 @@
     "health": 4230,
     "speed": 1.0,
     "attack": 300,
-    "weapon": "Giant Katana",
     "size": "Huge",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Giant Katana",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 500,
-        "damage_max": 500,
-        "cooldown_s": 1.5,
-        "dps": 333,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": ["Projectile Block"],
     "description": "Enormous samurai that can deflect projectiles and strike multiple foes with a giant sword.",
     "faction": "Secret",
@@ -3530,20 +1721,8 @@
     "health": 761,
     "speed": 1.0,
     "attack": 300,
-    "weapon": "Ullr Axes",
     "size": "Large",
     "attack_range": 15.0,
-    "weapons": [
-      {
-        "name": "Ullr Axe Throw",
-        "weapon_type": "Ice - Ranged",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 2.5,
-        "dps": 80,
-        "range_wm": 15.0
-      }
-    ],
     "abilities": [],
     "description": "Throws two large axes that freeze enemies on hit.",
     "faction": "Secret",
@@ -3555,20 +1734,8 @@
     "health": 1268,
     "speed": 1.0,
     "attack": 350,
-    "weapon": "Guandao",
     "size": "Large",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Guandao",
-        "weapon_type": "Polearm - Melee",
-        "damage_min": 250,
-        "damage_max": 250,
-        "cooldown_s": 1.0,
-        "dps": 250,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Spins with her polearm to create a deadly whirlwind attack.",
     "faction": "Secret",
@@ -3580,20 +1747,8 @@
     "health": 100,
     "speed": 1.0,
     "attack": 350,
-    "weapon": "Shurikens",
     "size": "Small",
     "attack_range": 10.0,
-    "weapons": [
-      {
-        "name": "Sensei Shuriken Throw",
-        "weapon_type": "Throwable - Ranged",
-        "damage_min": 20,
-        "damage_max": 20,
-        "cooldown_s": 0.1,
-        "dps": 200,
-        "range_wm": 10.0
-      }
-    ],
     "abilities": [],
     "description": "Master ninja who throws a barrage of shurikens at blinding speed.",
     "faction": "Secret",
@@ -3605,20 +1760,8 @@
     "health": 720,
     "speed": 1.0,
     "attack": 350,
-    "weapon": "Shogun's Katana",
     "size": "Large",
     "attack_range": 1.5,
-    "weapons": [
-      {
-        "name": "Shogun's Katana",
-        "weapon_type": "Sword - Melee",
-        "damage_min": 200,
-        "damage_max": 200,
-        "cooldown_s": 1.0,
-        "dps": 200,
-        "range_wm": 1.5
-      }
-    ],
     "abilities": ["Projectile Block"],
     "description": "Elite swordsman that can dodge and deflect incoming projectiles, then dash forward to strike.",
     "faction": "Secret",
@@ -3630,20 +1773,8 @@
     "health": 6125,
     "speed": 1.0,
     "attack": 400,
-    "weapon": "Tree",
     "size": "Huge",
     "attack_range": 3.0,
-    "weapons": [
-      {
-        "name": "Tree",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 500,
-        "damage_max": 500,
-        "cooldown_s": 1.5,
-        "dps": 333,
-        "range_wm": 3.0
-      }
-    ],
     "abilities": [],
     "description": "Giant that wields a massive tree as a club, sweeping away armies with each swing.",
     "faction": "Secret",
@@ -3655,20 +1786,8 @@
     "health": 661,
     "speed": 1.0,
     "attack": 550,
-    "weapon": "Artemis Bow",
     "size": "Large",
     "attack_range": 18.0,
-    "weapons": [
-      {
-        "name": "Artemis Bow",
-        "weapon_type": "Bow - Ranged",
-        "damage_min": 50,
-        "damage_max": 50,
-        "cooldown_s": 0.1,
-        "dps": 500,
-        "range_wm": 18.0
-      }
-    ],
     "abilities": [],
     "description": "Mythical archer who fires multiple arrows per shot at blinding speed.",
     "faction": "Secret",
@@ -3680,29 +1799,8 @@
     "health": 12960,
     "speed": 1.0,
     "attack": 600,
-    "weapon": "Ice Giant Punch",
     "size": "Huge",
     "attack_range": 2.0,
-    "weapons": [
-      {
-        "name": "Ice Giant Punch",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 1000,
-        "damage_max": 1000,
-        "cooldown_s": 2.0,
-        "dps": 500,
-        "range_wm": 2.0
-      },
-      {
-        "name": "Ice Giant Punch",
-        "weapon_type": "Bludgeon - Melee",
-        "damage_min": 1000,
-        "damage_max": 1000,
-        "cooldown_s": 2.0,
-        "dps": 500,
-        "range_wm": 2.0
-      }
-    ],
     "abilities": [],
     "description": "Enormous frost giant that can freeze foes with its punches and has the highest durability.",
     "faction": "Secret",

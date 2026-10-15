@@ -1,9 +1,5 @@
-"""Gymnasium wrapper around TabsEnv for Stable-Baselines3 PPO (Phase 3).
-
-Sequential per-unit placement: one MultiDiscrete action per step (unit type,
-x bin, y bin, or a "stop and start the battle" choice), full army built up
-across an episode.
-"""
+"""Gymnasium wrapper around TabsEnv for Stable-Baselines3 PPO.
+One action per step places a unit (type, x bin, y bin) or, with the extra type index, starts the battle."""
 
 import gymnasium as gym
 from gymnasium import spaces
@@ -16,12 +12,11 @@ Y_BINS = 20
 NUM_ENEMY_POSITION_FEATURES = 4  # mean_x, mean_y, std_x, std_y
 
 class TabsGymEnv(gym.Env):
-    def __init__(self, tabs_env: TabsEnv, unit_names, unit_catalog, stage):
+    def __init__(self, tabs_env: TabsEnv, unit_names, unit_catalog):
         super().__init__()
         self.tabs_env = tabs_env
         self.unit_names = unit_names
         self.unit_catalog = unit_catalog
-        self.stage = stage
         self.starting_budget = None  # set on reset(), needed to normalize budget in observations
         self.unit_name_to_index = {name: i for i, name in enumerate(unit_names)}
 
@@ -46,13 +41,13 @@ class TabsGymEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
-        state = self.tabs_env.reset(self.stage)
+        state = self.tabs_env.reset()
         self.starting_budget = state["Budget"]
         obs = self._encode_observation(state)
         return obs, {}
-    
+
     def step(self, action):
-        unit_index, x_bin, y_bin = action 
+        unit_index, x_bin, y_bin = action
         if unit_index == len(self.unit_names):
             state, reward, done, info = self.tabs_env.start_battle()
         else:
@@ -64,12 +59,3 @@ class TabsGymEnv(gym.Env):
         terminated = done
         truncated = False
         return obs, reward, terminated, truncated, info
-    
-
-
-
-
-
-
-
-

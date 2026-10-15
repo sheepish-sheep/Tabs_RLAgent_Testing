@@ -26,14 +26,15 @@ Default IO directory: `%LOCALAPPDATA%\TabsAgentModIO\`
 ```
 TabsAgentMod/           C# BepInEx plugin (writes state, applies plans)
 core/
-  env.py                TabsEnv — file-bridge episode loop
+  env.py                TabsEnv — file-bridge episode loop and reward
   ppo_env.py            Gymnasium wrapper over TabsEnv
   train_ppo.py          PPO training entry point
   ga_search.py          CMA-ES search over army compositions
-  models.py             Domain models (Unit, Army, GameState)
-  unit_catalog.py       Load unit data from JSON
+  models.py             Unit dataclass
+  unit_catalog.py       Loads the unit catalog; filters out units the game can't place
 data/
-  units_dummy.json      Unit catalog placeholder
+  units_dummy.json      Unit names and costs the search budgets against
+RUNBOOK.md              Day-to-day operation: starting, checking, tuning, archiving
 ```
 
 ## Prerequisites
@@ -45,9 +46,8 @@ data/
 Building the C# mod is only needed if you change it. Note that `TabsAgentMod/bin/`
 is gitignored, so a fresh clone has no prebuilt DLL and must build one. To build,
 you need the [.NET SDK](https://dotnet.microsoft.com/download) (`dotnet build`) — full
-Visual Studio is not required. Targeting `net472` without the Developer Pack also needs
-`<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />`
-in the csproj.
+Visual Studio is not required. The csproj already references
+`Microsoft.NETFramework.ReferenceAssemblies`, so the .NET Framework Developer Pack isn't needed.
 
 ## Mod Installation
 

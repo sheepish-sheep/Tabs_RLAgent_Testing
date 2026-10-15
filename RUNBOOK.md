@@ -35,10 +35,11 @@ The IO folder files:
 | `plan.json` | Python | army to place |
 | `reset.json` | Python | reset the level |
 | `start_battle.json` | Python | start the battle |
-| `dump_costs.json`, `dump_costs_raw.json` | you/Python | ask the mod to dump unit blueprints to `blueprint_costs*.json` |
+| `dump_costs.json` | you/Python | ask the mod to dump unit blueprint costs to `blueprint_costs.json` |
 
-In-game hotkeys: **R** reset level, **B** start battle. **P** is the old LLM-bridge key: it
-writes state, picks an anchor from the mouse cursor, then applies `plan.json`.
+In-game hotkeys: **R** reset level, **B** start battle. Placing a saved army (e.g. copying
+`best_army_plan.json` to `plan.json`) needs no key -- the mod's poll loop applies any new
+`plan.json` automatically.
 
 ---
 
@@ -156,13 +157,12 @@ level reset does not reload it. Editing while TABS is closed is fine.
 
 | Setting | Default | What it does |
 |---|---|---|
-| `IgnoreCursorForAutoAnchor` | `true` | Automatic placement (training) ignores the mouse when choosing the anchor. Leave `true`. Manual **P** still uses the cursor. |
+| `IgnoreCursorForAutoAnchor` | `true` | Ignores the mouse when choosing the anchor. Leave `true` for training; `false` anchors on the cursor. |
 | `AutoAnchorBackOffset` | `15` | Slides the deployment box backward (away from the enemy) by this many world units. `0` disables it. If the shifted point is invalid the mod silently keeps the original anchor (log: `keeping original anchor`). |
 | `DeploymentBoxHalfExtentX` | `40` | Half the box size along **world x**. Total size is 2x this. |
 | `DeploymentBoxHalfExtentZ` | `40` | Half the box size along **world z**. |
 
-**X and Z are world axes.** (The description text in the settings file calls them "right/forward"
-- that is wrong.) To know which one is depth, read the last
+**X and Z are world axes.** To know which one is depth, read the last
 `anchor source=... forward=(a, b, c)` line in the mod log:
 - `forward=(±1,0,0)` -> **X is depth** (front-to-back), Z is width.
 - `forward=(0,0,±1)` -> the reverse.
@@ -205,9 +205,9 @@ with the four values above (read from the settings file at save time). It reflec
 relaunching TABS, the recorded values will be wrong.
 
 Other settings in the file (rarely touched): `IoDirectory`, `StateWriteIntervalSeconds` (0.1),
-`PlanPollIntervalSeconds` (0.1), `UseMockState`, `MockBudget`, `Campaign`, `BattleBudget`
-(the last three only matter for the mock collector). The `[LLM]` section is dead - the
-LLM bridge was deleted.
+`PlanPollIntervalSeconds` (0.1). Older entries (`UseMockState`, `MockBudget`, `Campaign`,
+`BattleBudget`, the `[LLM]` section) are no longer read by the mod; they're harmless and can
+be deleted from the file.
 
 Example, for reference only: on the level with enemy cost 4,610 (forward = +x) the playable
 RED ground measured roughly x -40..0 with the team line at 0, giving `4 / 17 / 30`. Those
@@ -315,7 +315,7 @@ env = TabsEnv(Path(os.environ["LOCALAPPDATA"]) / "TabsAgentModIO")
 costs, wins = [], 0
 for i in range(1, runs + 1):
     try:
-        env.reset(None)
+        env.reset()
         state, reward, done, info = env.place_army(placements)
         if not done:
             state, reward, done, info = env.start_battle()
@@ -344,8 +344,8 @@ database this install loads (it has 186 blueprints, none failed to load - the 10
 not in the list):
 Celestial Aegis, Chronomancer, Death Bringer, Divine Arbiter, Exiled Sentinel,
 Righteous Paladin, Shadow Walker, Tempest Lich, Void Cultist, Void Monarch.
-They are filtered out of the search (`UNRESOLVABLE_UNITS`, encoding v4), so new runs cannot
-pick them. Armies found **before** the filter may contain them - on replay those units
+They are filtered out of both CMA-ES and PPO (`UNRESOLVABLE_UNITS` in `core/unit_catalog.py`),
+so new runs cannot pick them. Armies found **before** the filter may contain them - on replay those units
 silently do not appear. Nothing further can be fixed from the mod side.
 
 **Timeouts add noise.** About 15-20% of battles timed out in one observed run (75 over
@@ -393,9 +393,6 @@ checkpoint from a different level or different placement settings will resume bu
 unit; single-unit spam does not win anyway on hard levels. PPO (`core/train_ppo.py`) exists
 but has never been run end to end.
 
-**Archives without placement info** (as of writing): `adventure_level_2` and
-`adventure_level_3` have no `placement_config` - the values used are unknown.
-
 ---
 
 ## 10. One-time setup (already done on this machine)
@@ -423,16 +420,20 @@ Then relaunch TABS and check the log for `TabsAgent Mod loaded.`
 
 ---
 
-## 11. Archive status (as of 2026-09-20)
+## 11. Archive status (as of 2026-10-15)
 
 | Folder | Best cost | Placement settings (offset / box X / box Z) |
 |---|---|---|
-| `chal_level_3` | -1.236 | 4 / 17 / 30 - recorded automatically |
-| `chal_level_3_A` | -1.107 | 4 / 17 / 30 - backfilled by hand |
+| `chal_level_1` | -1.236 | 4 / 17 / 30 - recorded automatically |
+| `chal_level_2` | -1.088 | 4 / 17 / 30 - recorded automatically |
+| `chal_level_2_A` | -1.107 | 4 / 17 / 30 - backfilled by hand |
+| `chal_level_3` | -1.208 | 4 / 17 / 30 - recorded automatically |
+| `chal_level_4` | -1.198 | 4 / 17 / 30 - recorded automatically |
 | `adventure_level_1` | -1.167 | 15 / 40 / 40 - backfilled (inferred) |
-| `adventure_level_2` | -1.250 | unknown |
-| `adventure_level_3` | -1.250 | unknown |
 | `level1_hardest_23020cost` | -0.775 (not converged, gen 73) | 30 / 40 / 40 - backfilled (from the log seen at the time) |
+
+`adventure_level_2` and `adventure_level_3` were deleted (2026-10-15): they had no recorded
+placement settings, so they couldn't be replayed reliably.
 
 "Backfilled" entries carry `"backfilled": true` and a `basis` note in their
 `best_army_meta.json`.
